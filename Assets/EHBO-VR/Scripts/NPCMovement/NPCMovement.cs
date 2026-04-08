@@ -6,132 +6,96 @@ public class NPCMovement : MonoBehaviour
     public enum MoveState { Idle, Walk, Run }
 
     [Header("Movement Settings")]
-    [SerializeField]
-    private Transform[] waypoints;
-    [SerializeField]
-    private MoveState currentState = MoveState.Walk;
-    [SerializeField]
-    private float walkSpeed = 3f;
-    [SerializeField]
-    private float runSpeed = 6f;
-    [SerializeField]
-    private float waitTime = 0f;
-    [SerializeField]
-    private bool loopPath = false;
+    [SerializeField] private Transform[] waypoints;
+    [SerializeField] private MoveState currentState = MoveState.Walk;
+    [SerializeField] private float walkSpeed = 3f;
+    [SerializeField] private float runSpeed = 6f;
 
     [Header("References")]
-    [SerializeField]
-    private Animator animator;
-    [SerializeField]
-    private Transform lookAtTarget;
-
+    [SerializeField] private Animator animator;
+    [SerializeField] private Animator victimAnimator; 
+    [SerializeField] private Transform lookAtTarget;
+    
+    private AudioSource dogAudio;
     private int currentWaypoint = 0;
-    private bool isWaiting = false;
+    private bool hasArrivedAtFinal = false;
+    private bool isMoving = false;
 
+    void Start()
+    {
+        dogAudio = GetComponent<AudioSource>();
+        if (animator == null) animator = GetComponent<Animator>();
+    }
 
     void Update()
     {
-        if (waypoints.Length == 0) return;
+        if (animator == null) return;
 
-        // Only move when he is not waiting
-        if (!isWaiting)
+        // 1. STATUS OVERNEMEN
+        if (victimAnimator != null)
+        {
+            bool isVictimShocked = victimAnimator.GetBool("shocked");
+            animator.SetBool("shocked", isVictimShocked);
+        }
+
+        // 2. BLOKKADE: Wachten op het ongeluk
+        if (!animator.GetBool("shocked"))
+        {
+            animator.SetFloat("Speed", 0f);
+            return;
+        }
+
+        // --- HET INCIDENT IS BEGONNEN ---
+
+        // 3. Geluid (Blaffen/Schrikken)
+        if (dogAudio != null && !dogAudio.isPlaying && !hasArrivedAtFinal) 
+        {
+            dogAudio.Play();
+        }
+
+        // 4. Aankomst logica
+        if (hasArrivedAtFinal)
+        {
+            animator.SetFloat("Speed", 0f);
+            if (lookAtTarget != null) LookAtTarget();
+            return;
+        }
+
+        // 5. Beweging starten
+        if (waypoints.Length > 0)
         {
             MoveTowardsWaypoint();
         }
-
-        //If loop is not on and he is at the last waypoint look at the target
-        if (!loopPath && currentWaypoint == waypoints.Length - 1 && lookAtTarget != null)
-        {
-            LookAtTarget();
-        }
     }
 
-    // ===============================
-    // 🔹 Movement Logic
-    // ===============================
     private void MoveTowardsWaypoint()
     {
         Vector3 target = waypoints[currentWaypoint].position;
         float distance = Vector3.Distance(transform.position, target);
         Vector3 direction = (target - transform.position).normalized;
 
-        if (distance > 0.1f)
+        if (distance > 0.15f) 
         {
-            float moveSpeed = GetMoveSpeed();
-            MoveNPC(direction, moveSpeed);
-            RotateTowards(direction);
-            UpdateAnimationSpeed();
+            float speedValue = (currentState == MoveState.Run) ? runSpeed : walkSpeed;
+            transform.position += direction * speedValue * Time.deltaTime;
+            
+            if (direction != Vector3.zero)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * 5f);
+            }
+            
+            // Gebruik de currentState voor de animator waarde
+            float animatorSpeed = 0f;
+            if (currentState == MoveState.Walk) animatorSpeed = 1f;
+            if (currentState == MoveState.Run) animatorSpeed = 3f;
+
+            animator.SetFloat("Speed", animatorSpeed);
         }
         else
         {
-            animator.SetFloat("Speed", 0f);
-            StartCoroutine(WaitBeforeNextWaypoint());
-        }
-    }
-
-    private float GetMoveSpeed()
-    {
-        switch (currentState)
-        {
-            case MoveState.Idle: return 0f;
-            case MoveState.Walk: return walkSpeed;
-            case MoveState.Run: return runSpeed;
-            default: return 0f;
-        }
-    }
-
-    private void MoveNPC(Vector3 direction, float speed)
-    {
-        // move NPC
-        transform.position += direction * speed * Time.deltaTime;
-    }
-
-    private void RotateTowards(Vector3 direction)
-    {
-        // Smooth rotation
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 3f);
-    }
-
-    private void UpdateAnimationSpeed()
-    {
-        // How fast the animation is
-        float blendValue = 0f;
-        if (currentState == MoveState.Idle)
-            blendValue = 0f;
-        else if (currentState == MoveState.Walk)
-            blendValue = 1f;
-        else if (currentState == MoveState.Run)
-            blendValue = 3f;
-
-        animator.SetFloat("Speed", blendValue);
-    }
-
-    // ===============================
-    // 🔹 Waypoint Handling
-    // ===============================
-    private IEnumerator WaitBeforeNextWaypoint()
-    {
-        isWaiting = true;
-        yield return new WaitForSeconds(waitTime);
-        HandleWaypointProgression();
-    }
-
-    private void HandleWaypointProgression()
-    {
-        // if loopPath is true walk back to the first waypoint
-        if (loopPath)
-        {
-            currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
-            isWaiting = false;
-        }
-        else
-        {
-            // else stop at the last waypoint
             if (currentWaypoint < waypoints.Length - 1)
             {
                 currentWaypoint++;
-                isWaiting = false;
             }
             else
             {
@@ -142,32 +106,26 @@ public class NPCMovement : MonoBehaviour
 
     private void StopAtLastWaypoint()
     {
-        currentState = MoveState.Idle;
-        animator.SetFloat("Speed", 0f);
-        //lookAtTarget happends now in update()
+        if (hasArrivedAtFinal) return; // Voorkom dubbele aanroep
 
+        hasArrivedAtFinal = true;
+        animator.SetFloat("Speed", 0f);
+        animator.SetTrigger("Arrived"); 
+
+        if (UIManager.Instance != null) 
+        {
+            UIManager.Instance.ToonInstructieAankomst();
+        }
     }
 
-    // ===============================
-    // 🔹 Look at Target (at last waypoint)
-    // ===============================
     private void LookAtTarget()
     {
-        //Makes a copy of the targets position
         Vector3 targetPos = new Vector3(lookAtTarget.position.x, transform.position.y, lookAtTarget.position.z);
-
-        //Calculates the direction
-        Vector3 lookDirection = (targetPos - transform.position).normalized;
-
-        // Only rotate if there is a valid direction
-        if (lookDirection != Vector3.zero)
+        Vector3 lookDir = targetPos - transform.position;
+        
+        if (lookDir != Vector3.zero)
         {
-            // Create a rotation that looks in the direction of the target
-            Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
-
-            // Smoothly rotate from the current rotation to the target rotation
-            // The 2f value controls how fast the NPC turns
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 2f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDir), Time.deltaTime * 2f);
         }
     }
 }

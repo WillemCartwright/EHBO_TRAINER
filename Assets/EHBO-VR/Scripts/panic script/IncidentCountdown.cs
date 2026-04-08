@@ -5,118 +5,99 @@ using UnityEngine.AI;
 
 public class IncidentCountdown : MonoBehaviour
 {
-    // Variables for countdown and control
-    [SerializeField]
-    private bool IsActive = false;
-    [SerializeField]
-    private float countdownTime = 5f; // Default countdown time
-    [SerializeField]
-    private bool useRandomTime = false; // Toggle for random countdown time
-    [SerializeField]
-    private float randomMin = 3f; // Minimum random countdown time
-    [SerializeField]
-    private float randomMax = 10f; // Maximum random countdown time
+    [Header("Countdown Settings")]
+    [SerializeField] private bool IsActive = false;
+    [SerializeField] private float countdownTime = 5f;
 
-    [SerializeField]
-    private Animator[] objectsToAnimate; // Reference to the animators
-    [SerializeField]
-    private AudioSource countdownEndSound; // Reference to the AudioSource for the sound effect
+    [Header("Victim (De man die valt)")]
+    [SerializeField] private Animator victimAnimator; 
 
-    [SerializeField]
-    private GameObject[] responders; // The responders that need to be activated
+    [Header("Responders (De NPC's die rennen)")]
+    [SerializeField] private GameObject[] responders; 
+
+    [Header("Other References")]
+    [SerializeField] private AudioSource countdownEndSound; 
+    [SerializeField] private TimerParkscene mainTimer; 
 
     private float currentTime;
-    private bool countdownFinished = false; // To track if the countdown is already finished
+    private bool countdownFinished = false;
 
     void Start()
     {
-        // Set countdown time
-        if (useRandomTime)
-        {
-            countdownTime = Random.Range(randomMin, randomMax);
-        }
-
         currentTime = countdownTime;
+        
+        // Zorg dat de responders bij de start ECHT stilstaan en hun script uit staat
+        foreach (GameObject responder in responders)
+        {
+            if (responder != null)
+            {
+                var movement = responder.GetComponent<NPCMovement>();
+                if (movement != null) movement.enabled = false;
+                
+                Animator anim = responder.GetComponent<Animator>();
+                if (anim != null) anim.SetBool("shocked", false);
+            }
+        }
     }
 
     void Update()
     {
         if (IsActive && !countdownFinished)
         {
-            // Reduce countdown timer
             currentTime -= Time.deltaTime;
 
-            // Check if countdown has finished
             if (currentTime <= 0f)
             {
-                ActivateAction();
+                ActivateIncident();
             }
         }
     }
 
-    void ActivateAction()
+    void ActivateIncident()
     {
-        countdownFinished = true; // Mark that countdown is finished
+        countdownFinished = true;
 
-        // Trigger the animation on all specified objects
-        SwapAnimation();
-        ActivateResponders();
+        // 1. Start de 300s timer bovenin
+        if (mainTimer != null) mainTimer.StartRealTimer();
 
-        // Find and stop all NavMeshAgents in the scene by setting their speed to 0
+        // 2. LAAT DE VICTIM DIRECT VALLEN
+        if (victimAnimator != null)
+        {
+            victimAnimator.SetBool("shocked", true);
+            Debug.Log("Victim valt nu!");
+        }
+
+        // 3. START DE DELAY VAN 3 SECONDEN VOOR DE NPC'S
+        StartCoroutine(WaitAndThenRun(3f));
+
+        // Stop omstanders op de achtergrond
         NavMeshAgent[] navAgents = FindObjectsOfType<NavMeshAgent>();
-        foreach (NavMeshAgent agent in navAgents)
-        {
-            agent.speed = 0; // Set speed to 0 to stop the agents
-        }
+        foreach (NavMeshAgent agent in navAgents) { agent.speed = 0; }
 
-        // Play the sound effect only when the countdown finishes
-        if (countdownEndSound != null)
-        {
-            countdownEndSound.Play();
-        }
-
-  
+        if (countdownEndSound != null) countdownEndSound.Play();
     }
 
-    // Call this method to start the countdown
-    public void Activate()
+    private IEnumerator WaitAndThenRun(float delay)
     {
-        IsActive = true;
-        currentTime = countdownTime; // Reset countdown time when activated
-        countdownFinished = false;  // Reset the countdown finished flag
-    }
+        Debug.Log("Wachten op collapse... (3 seconden)");
+        yield return new WaitForSeconds(delay);
 
-    // Swap animation on the specified animator objects
-    public void SwapAnimation()
-    {
-        foreach (Animator animator in objectsToAnimate)
-        {
-            if (animator != null)
-            {
-                animator.SetBool("shocked", true); // Set the 'shocked' animation parameter to true
-            }
-        }
-    }
-
-    public void ActivateResponders()
-    {
-        StartCoroutine(ActivateRespondersWithDelay(3f)); // ← 2 seconden wachten
-    }
-
-    private IEnumerator ActivateRespondersWithDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay); // Wacht de opgegeven tijd
+        Debug.Log("Delay voorbij! NPC's gaan nu rennen.");
 
         foreach (GameObject responder in responders)
         {
             if (responder != null)
             {
+                // Zet het vinkje 'shocked' aan bij de NPC
+                Animator anim = responder.GetComponent<Animator>();
+                if (anim != null) anim.SetBool("shocked", true);
+
+                // Zet het script aan zodat ze gaan bewegen
                 var movement = responder.GetComponent<NPCMovement>();
-                if (movement != null)
-                {
-                    movement.enabled = true; // Zet hun movement script aan
-                }
+                if (movement != null) movement.enabled = true;
             }
         }
     }
+
+    public void Activate() { IsActive = true; }
 }

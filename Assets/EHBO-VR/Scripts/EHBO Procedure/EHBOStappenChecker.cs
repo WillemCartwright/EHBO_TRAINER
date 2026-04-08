@@ -2,50 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EHBOStappenChecker : MonoBehaviour
 {
-    [SerializeField] private List<string> correctOrder;      // Correct sequence of steps
-    private List<string> completedSteps = new List<string>(); // Tracks completed steps
-    [SerializeField] private TextMeshProUGUI debugPanelText; // For real-time debug display
-    [SerializeField] private GameObject summaryPanel;       // Panel to display final summary
-    [SerializeField] private TextMeshProUGUI summaryText;   // Summary display text
+    [SerializeField] private List<string> correctOrder;
+    private List<string> completedSteps = new List<string>();
+    
+    [Header("UI References")]
+    [SerializeField] private TextMeshProUGUI debugPanelText;
+    [SerializeField] private GameObject summaryPanel;
+    [SerializeField] private TextMeshProUGUI summaryText;
 
+    [Header("NPC Settings")]
+    // SLEEP HIER JE NPC'S IN (die de Animator hebben)
+    [SerializeField] private List<Animator> npcAnimators;
 
     void Start()
     {
-        summaryPanel.SetActive(false);                       // Hide summary at start
-        DisplayDebugInfo();                                  // Initialize debug display
+        // Veiligheidscheck: alleen SetActive doen als het panel is ingevuld
+        if (summaryPanel != null) summaryPanel.SetActive(false);
+        
+        DisplayDebugInfo();
     }
 
-    // Method to register a completed step from another script
+    // DEZE FUNCTIE MOET WORDEN AANGEROEPEN ALS DE MAN VALT
+    public void VictimHasFallen()
+    {
+        Debug.Log("Victim is gevallen! NPC's worden geactiveerd.");
+        foreach (Animator anim in npcAnimators)
+        {
+            if (anim != null)
+            {
+                anim.SetBool("shocked", true);
+            }
+        }
+    }
+
     public void RegisterStep(string stepName)
     {
-        // Prevent consecutive duplicate steps
         if (completedSteps.Count == 0 || completedSteps[completedSteps.Count - 1] != stepName)
         {
             completedSteps.Add(stepName);
             DisplayDebugInfo();
 
-            // Validate order if the final step in the correct sequence is reached
             if (stepName == "hart compressie" || completedSteps.Count == correctOrder.Count)
             {
                 ValidateOrder();
             }
         }
-        else
-        {
-            Debug.Log($"Action '{stepName}' ignored to prevent consecutive duplicate entry.");
-        }
     }
 
-    // Validates the order of completed steps against the correct order
     private void ValidateOrder()
     {
         bool isCorrect = true;
-
-        // Compare each completed step with the correct order
         for (int i = 0; i < correctOrder.Count; i++)
         {
             if (i >= completedSteps.Count || completedSteps[i] != correctOrder[i])
@@ -54,27 +63,25 @@ public class EHBOStappenChecker : MonoBehaviour
                 break;
             }
         }
-
-        // Show the summary with feedback on the order
         ShowSummary(isCorrect);
     }
 
-    // Display real-time debug information for completed steps
     private void DisplayDebugInfo()
     {
+        if (debugPanelText == null) return; // Voorkom error als vakje leeg is
+
         string debugPanelString = "Steps Completed:\n";
         for (int i = 0; i < completedSteps.Count; i++)
         {
             debugPanelString += $"{i + 1}. {completedSteps[i]}\n";
         }
         debugPanelText.text = debugPanelString;
-        Debug.Log(debugPanelString); // Output to console as well
     }
 
-    // Display the summary panel with final results and comparison if incorrect
     private void ShowSummary(bool isCorrect)
     {
-        summaryPanel.SetActive(true); // Show the summary panel
+        if (summaryPanel != null) summaryPanel.SetActive(true);
+        if (summaryText == null) return;
 
         string result = isCorrect ? "Correct Order!" : "Incorrect Order!";
         string summary = "Order of Steps Completed:\n";
@@ -84,7 +91,6 @@ public class EHBOStappenChecker : MonoBehaviour
             summary += $"{i + 1}. {completedSteps[i]}\n";
         }
 
-        // If incorrect, show the correct order as reference
         if (!isCorrect)
         {
             summary += "\nCorrect Order:\n";
@@ -96,14 +102,5 @@ public class EHBOStappenChecker : MonoBehaviour
 
         summary += $"\nResult: {result}";
         summaryText.text = summary;
-    }
-
-    // Resets the progress for retrying the exercise
-    private void ResetLevel()
-    {
-        completedSteps.Clear();
-        summaryPanel.SetActive(false);
-        DisplayDebugInfo();  // Clear and refresh debug display
-        Debug.Log("Exercise reset.");
     }
 }
