@@ -48,6 +48,9 @@ public class NPCInteraction : MonoBehaviour
 
     public void OnHoverEnter()
     {
+        // Check 1: Mogen we überhaupt interacteren (bijv. niet op de hond geklikt)?
+        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
+
         // De outline gaat PAS aan als canShowOutline door de UIManager op true is gezet
         if (outline != null && canShowOutline && !hasBeenAddressed)
         {
@@ -68,7 +71,10 @@ public class NPCInteraction : MonoBehaviour
 
     public void AddressNPC()
     {
-        // Als de NPC al is aangesproken of we mogen nog geen interactie doen, stop dan.
+        // Check 1: Is er een 'Game Over' door de hond?
+        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
+
+        // Check 2: Als de NPC al is aangesproken of de fase is nog niet gestart, stop dan.
         if (hasBeenAddressed || !canShowOutline) return;
         
         hasBeenAddressed = true;
@@ -79,7 +85,7 @@ public class NPCInteraction : MonoBehaviour
             outline.enabled = false;
         }
 
-        // Start de tekstreeks in de UI (ShowInteractionSequence fadet de oude tekst weg)
+        // Start de tekstreeks in de UI
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowInteractionSequence();

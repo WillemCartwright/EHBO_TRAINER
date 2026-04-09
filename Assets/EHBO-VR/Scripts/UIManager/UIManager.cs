@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using Oculus.Interaction; // Nodig voor de RayInteractable referentie
 
 public class UIManager : MonoBehaviour
 {
@@ -18,34 +20,75 @@ public class UIManager : MonoBehaviour
 
     [Header("Fase 2: Slachtoffer Reactie")]
     public string victimCallMessage = "Jij: Hallo meneer, kunt u mij horen?";
-    // Stap B: Vertel de speler WAT hij moet doen
     public string victimNoResponse = "... Het slachtoffer geeft geen reactie.\nKlik op zijn schouders om hem zachtjes te schudden.";
 
     [Header("Fase 3: Schudden")]
-    // Stap C: Bevestig DAT de speler het nu aan het doen is
     public string instructieSchuddenActive = "Het slachtoffer wordt nu rustig bij zijn schouders geschud.";
+
+    [Header("Hond Instellingen")]
+    public string dogWarningText = "Er is weinig tijd, richt je aandacht niet op de hond.";
+    [SerializeField] private RayInteractable dogRayInteractable; // De hond referentie
 
     [Header("Fase 3: Objecten")]
     [SerializeField] private GameObject leftShoulderZone;
     [SerializeField] private GameObject rightShoulderZone;
 
     private bool isShowingText = false;
+    private bool isGameOver = false; 
 
     void Awake()
     {
-        Instance = this;
+        if (Instance == null) Instance = this;
         
         if (uiGroup != null) uiGroup.alpha = 0;
 
-        // Schouderzones staan uit bij de start
         if (leftShoulderZone != null) leftShoulderZone.SetActive(false);
         if (rightShoulderZone != null) rightShoulderZone.SetActive(false);
+    }
+
+    /// <summary>
+    /// Gebruik dit in andere scripts: if(!UIManager.Instance.CanInteract()) return;
+    /// </summary>
+    public bool CanInteract()
+    {
+        return !isGameOver;
+    }
+
+    // --- HOND LOGICA ---
+    public void ShowDogWarning()
+    {
+        if (isGameOver) return; 
+        isGameOver = true;
+
+        // Forceer alle interacties uit
+        if (dogRayInteractable != null) dogRayInteractable.enabled = false;
+
+        StopAllCoroutines();
+        StartCoroutine(DogFailSequence());
+    }
+
+    private IEnumerator DogFailSequence()
+    {
+        isShowingText = true;
+        uiText.text = dogWarningText;
+        
+        // Snel infaden van de waarschuwing
+        yield return StartCoroutine(Fade(uiGroup.alpha, 1, 0.4f));
+        
+        // De speler MOET dit 3 seconden zien voor de herstart
+        yield return new WaitForSeconds(3f);
+        
+        // Uitfaden voor een nette overgang
+        yield return StartCoroutine(Fade(1, 0, 0.4f));
+
+        // Herstart de scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     // --- FASE 1: Omstanders ---
     public void ToonInstructieAankomst()
     {
-        if (isShowingText) return;
+        if (isGameOver) return;
 
         NPCInteraction[] alleNPCs = Object.FindObjectsByType<NPCInteraction>(FindObjectsSortMode.None);
         foreach (NPCInteraction npc in alleNPCs)
@@ -59,6 +102,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowInteractionSequence()
     {
+        if (isGameOver) return;
         StopAllCoroutines();
         StartCoroutine(InteractionSequence());
     }
@@ -67,7 +111,8 @@ public class UIManager : MonoBehaviour
     {
         isShowingText = true;
         yield return StartCoroutine(ShowTextAsync(afterClickMessage, 3f));
-        yield return new WaitForSeconds(0.5f);
+        
+        if (isGameOver) yield break; // Veiligheidscheck
 
         VictimInteraction victim = Object.FindAnyObjectByType<VictimInteraction>();
         if (victim != null) victim.EnableVictimInteraction();
@@ -78,6 +123,7 @@ public class UIManager : MonoBehaviour
     // --- FASE 2: Reactie checken ---
     public void ShowVictimReactionSequence()
     {
+        if (isGameOver) return;
         StopAllCoroutines();
         StartCoroutine(VictimSequence());
     }
@@ -85,24 +131,20 @@ public class UIManager : MonoBehaviour
     private IEnumerator VictimSequence()
     {
         isShowingText = true;
+        yield return StartCoroutine(ShowTextAsync(victimCallMessage, 4f));
+        
+        if (isGameOver) yield break;
 
-        // 1. "Hallo meneer?" (5 seconden)
-        yield return StartCoroutine(ShowTextAsync(victimCallMessage, 5f));
-        
-        yield return new WaitForSeconds(0.5f);
-        
-        // 2. Toon Stap B: "Geen reactie. Klik op zijn schouders..." (Blijft staan)
         yield return StartCoroutine(FadeInText(victimNoResponse));
 
-        // 3. Nu pas worden de triggers actief
         if (leftShoulderZone != null) leftShoulderZone.SetActive(true);
         if (rightShoulderZone != null) rightShoulderZone.SetActive(true);
     }
 
-    // --- FASE 3: Schudden (Direct aangeroepen door OnTriggerEnter in ShoulderTouchLogic) ---
+    // --- FASE 3: Schudden ---
     public void StartSchudTekst()
     {
-        // Alleen updaten als we niet al de schud-tekst tonen
+        if (isGameOver) return;
         if (uiText.text != instructieSchuddenActive)
         {
             StopAllCoroutines();
@@ -113,28 +155,30 @@ public class UIManager : MonoBehaviour
     private IEnumerator UpdateInstructie(string nieuweTekst)
     {
         isShowingText = true;
-        yield return StartCoroutine(Fade(uiGroup.alpha, 0, 0.5f));
+        yield return StartCoroutine(Fade(uiGroup.alpha, 0, 0.3f));
         uiText.text = nieuweTekst;
-        yield return StartCoroutine(Fade(0, 1, 0.5f));
+        yield return StartCoroutine(Fade(0, 1, 0.3f));
     }
 
-    // --- FADE ENGINES ---
+    // --- HULPFUNCTIES ---
     private IEnumerator FadeInText(string message)
     {
+        if (isGameOver) yield break;
         isShowingText = true;
         uiText.text = message;
-        yield return StartCoroutine(Fade(uiGroup.alpha, 1, 0.8f));
+        yield return StartCoroutine(Fade(uiGroup.alpha, 1, 0.6f));
     }
 
     public void VerbergTekst()
     {
+        if (isGameOver) return;
         StopAllCoroutines();
         StartCoroutine(TextFadeOutEnStop());
     }
 
     private IEnumerator TextFadeOutEnStop()
     {
-        yield return StartCoroutine(Fade(uiGroup.alpha, 0, 0.8f));
+        yield return StartCoroutine(Fade(uiGroup.alpha, 0, 0.6f));
         isShowingText = false;
         uiText.text = "";
     }
@@ -142,23 +186,23 @@ public class UIManager : MonoBehaviour
     public IEnumerator ShowTextAsync(string message, float duration)
     {
         uiText.text = message;
-        yield return StartCoroutine(Fade(uiGroup.alpha, 1, 0.8f));
+        yield return StartCoroutine(Fade(uiGroup.alpha, 1, 0.6f));
         yield return new WaitForSeconds(duration);
-        yield return StartCoroutine(Fade(1, 0, 0.8f));
+        if (!isGameOver) yield return StartCoroutine(Fade(1, 0, 0.6f));
         isShowingText = false;
     }
 
     private IEnumerator Fade(float start, float end, float time)
     {
         if (uiGroup == null) yield break;
-
         float elapsed = 0; 
         while (elapsed < time) 
         { 
             elapsed += Time.deltaTime; 
+            if (uiGroup == null) yield break; // Extra check voor scene switch
             uiGroup.alpha = Mathf.Lerp(start, end, elapsed / time); 
             yield return null; 
         }
-        uiGroup.alpha = end;
+        if (uiGroup != null) uiGroup.alpha = end;
     }
 }

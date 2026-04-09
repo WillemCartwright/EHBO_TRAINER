@@ -20,6 +20,9 @@ public class VictimInteraction : MonoBehaviour
 
     public void OnHoverEnter()
     {
+        // Check of interactie mag (niet op hond geklikt)
+        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
+
         if (outline != null && canInteract && !hasBeenClicked)
         {
             outline.enabled = true;
@@ -33,17 +36,20 @@ public class VictimInteraction : MonoBehaviour
 
     public void OnVictimSelect()
     {
-    if (!canInteract || hasBeenClicked) return;
-    hasBeenClicked = true;
+        // Check of interactie mag (niet op hond geklikt)
+        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
 
-    if (outline != null) outline.enabled = false;
+        if (!canInteract || hasBeenClicked) return;
+        hasBeenClicked = true;
 
-    // Start de nieuwe reeks in de UIManager
-    if (UIManager.Instance != null)
-    {
-        UIManager.Instance.ShowVictimReactionSequence();
-    }
-    
-    Debug.Log("Slachtoffer aangesproken, sequence gestart.");
+        if (outline != null) outline.enabled = false;
+
+        // Start de nieuwe reeks in de UIManager
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowVictimReactionSequence();
+        }
+        
+        Debug.Log("Slachtoffer aangesproken, sequence gestart.");
     }
 }

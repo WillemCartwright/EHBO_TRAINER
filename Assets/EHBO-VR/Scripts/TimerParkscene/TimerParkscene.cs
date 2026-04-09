@@ -10,7 +10,7 @@ public class TimerParkscene : MonoBehaviour
     
     [Header("References")]
     [SerializeField] IncidentCountdown incidentScript; 
-    [SerializeField] EHBOStappenChecker stappenChecker; // SLEEP HIER JE STAPPENCHECKER IN
+    [SerializeField] EHBOStappenChecker stappenChecker; 
 
     private bool isTimerRunning = false;
     private float totalTime;
@@ -30,7 +30,6 @@ public class TimerParkscene : MonoBehaviour
         if (timerCanvas != null) 
             timerCanvas.SetActive(true);
         
-        // --- NIEUW: Vertel de stappenchecker dat de victim is gevallen ---
         if (stappenChecker != null)
         {
             stappenChecker.VictimHasFallen();
@@ -77,10 +76,14 @@ public class TimerParkscene : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            // Start het incident (vallen slachtoffer)
+            // Dit zorgt ervoor dat de Animator van de man en de hond uiteindelijk naar 'Shocked' gaan
             if (incidentScript != null)
             {
                 incidentScript.Activate();
             }
+
+            // Deactiveer deze trigger zodat hij niet nog een keer afgaat
             GetComponent<Collider>().enabled = false;
         }
     }
