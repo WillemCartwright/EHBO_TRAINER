@@ -8,6 +8,10 @@ public class TimerParkscene : MonoBehaviour
     [SerializeField] float remainingTime = 300f;
     [SerializeField] RectTransform redBar;
     
+    [Header("Audio")]
+    [SerializeField] private AudioSource timerAudioSource; // Sleep hier je AudioSource in
+    [SerializeField] private AudioClip timerTickClip;     // Optioneel: als je een specifieke clip wilt toewijzen
+
     [Header("References")]
     [SerializeField] IncidentCountdown incidentScript; 
     [SerializeField] EHBOStappenChecker stappenChecker; 
@@ -22,6 +26,13 @@ public class TimerParkscene : MonoBehaviour
 
         totalTime = remainingTime;
         UpdateTimerDisplay();
+
+        // Zorg dat het geluid niet al speelt bij het opstarten
+        if (timerAudioSource != null)
+        {
+            timerAudioSource.Stop(); 
+            timerAudioSource.loop = true; // Meestal wil je dat een timer-geluid herhaalt
+        }
     }
 
     public void StartRealTimer()
@@ -30,6 +41,14 @@ public class TimerParkscene : MonoBehaviour
         if (timerCanvas != null) 
             timerCanvas.SetActive(true);
         
+        // --- NIEUW: Start het geluid ---
+        if (timerAudioSource != null)
+        {
+            if (timerTickClip != null) timerAudioSource.clip = timerTickClip;
+            timerAudioSource.Play();
+            Debug.Log("Timer geluid gestart!");
+        }
+
         if (stappenChecker != null)
         {
             stappenChecker.VictimHasFallen();
@@ -53,12 +72,20 @@ public class TimerParkscene : MonoBehaviour
                 remainingTime = 0;
                 isTimerRunning = false;
                 timerparksceneText.color = Color.red;
+
+                // --- NIEUW: Stop het geluid als de tijd op is ---
+                if (timerAudioSource != null)
+                {
+                    timerAudioSource.Stop();
+                }
+
                 UpdateTimerDisplay();
                 UpdateRedBar();
             }
         }
     }
 
+    // De rest van je functies (UpdateRedBar, UpdateTimerDisplay, OnTriggerEnter) blijven hetzelfde...
     void UpdateRedBar()
     {
         float fraction = remainingTime / totalTime;
@@ -76,14 +103,10 @@ public class TimerParkscene : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Start het incident (vallen slachtoffer)
-            // Dit zorgt ervoor dat de Animator van de man en de hond uiteindelijk naar 'Shocked' gaan
             if (incidentScript != null)
             {
                 incidentScript.Activate();
             }
-
-            // Deactiveer deze trigger zodat hij niet nog een keer afgaat
             GetComponent<Collider>().enabled = false;
         }
     }
