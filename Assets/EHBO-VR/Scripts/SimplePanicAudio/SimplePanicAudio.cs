@@ -5,58 +5,43 @@ public class SimplePanicAudio : MonoBehaviour
 {
     [Header("Audio Instellingen")]
     [SerializeField] private AudioClip panicClip;
-    [SerializeField] private float interval = 20f;
-    [SerializeField] private float initialDelay = 10f; // De vertraging voor de eerste schreeuw
+    [SerializeField] private float initialDelay = 10f; // De vertraging voor de enige schreeuw
     [SerializeField] private string animatorParameter = "shocked";
 
     private AudioSource audioSource;
     private Animator animator;
     private float timer;
-    private bool hasStarted = false;
-    private bool initialDelayFinished = false;
+    private bool hasScreamed = false; // Houdt bij of er al geschreeuwd is
 
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
-        
-        // We beginnen de timer op 0
         timer = 0; 
     }
 
     void Update()
     {
-        // Check of de NPC in paniek is (animator parameter is true)
+        // Check of de NPC in paniek is
         if (animator != null && animator.GetBool(animatorParameter))
         {
-            timer += Time.deltaTime;
-
-            // Stap 1: Wacht op de eerste vertraging
-            if (!initialDelayFinished)
+            // Alleen de timer laten lopen als er nog niet geschreeuwd is
+            if (!hasScreamed)
             {
+                timer += Time.deltaTime;
+
                 if (timer >= initialDelay)
                 {
                     PlaySound();
-                    timer = 0; // Reset timer voor het normale interval
-                    initialDelayFinished = true;
-                    hasStarted = true;
-                }
-            }
-            // Stap 2: Gebruik het normale interval voor de rest van de tijd
-            else
-            {
-                if (timer >= interval)
-                {
-                    PlaySound();
-                    timer = 0;
+                    hasScreamed = true; // Zorg dat we hierna niet meer schreeuwen
                 }
             }
         }
         else
         {
-            // Reset alles als de paniek stopt (zodat het opnieuw begint als ze later weer schrikt)
-            hasStarted = false;
-            initialDelayFinished = false;
+            // Reset de status als de paniek stopt
+            // Zo schreeuwt ze opnieuw 1 keer als de paniek later weer getriggerd wordt
+            hasScreamed = false;
             timer = 0; 
         }
     }
