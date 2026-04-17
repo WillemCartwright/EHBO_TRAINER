@@ -2,8 +2,9 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using Oculus.Interaction; // Nodig voor de RayInteractable referentie
+using Oculus.Interaction; 
 
 public class UIManager : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class UIManager : MonoBehaviour
     [Header("UI Elementen")]
     [SerializeField] private TextMeshProUGUI uiText;
     [SerializeField] private CanvasGroup uiGroup; 
+
+    [Header("Eindscherm UI (Nieuw)")]
+    [SerializeField] private GameObject eindPaneel;
+    [SerializeField] private TextMeshProUGUI eindTekst;
 
     [Header("Fase 1: Het Ongeluk")]
     public string instructieAankomst = "Er is een man op de grond gevallen!\nKlik de omstanders aan.";
@@ -27,11 +32,14 @@ public class UIManager : MonoBehaviour
 
     [Header("Hond Instellingen")]
     public string dogWarningText = "Er is weinig tijd, richt je aandacht niet op de hond.";
-    [SerializeField] private RayInteractable dogRayInteractable; // De hond referentie
+    [SerializeField] private RayInteractable dogRayInteractable; 
 
     [Header("Fase 3: Objecten")]
     [SerializeField] private GameObject leftShoulderZone;
     [SerializeField] private GameObject rightShoulderZone;
+
+    [Header("Referenties Managers")]
+    [SerializeField] private EHBOStappenChecker stappenChecker;
 
     private bool isShowingText = false;
     private bool isGameOver = false; 
@@ -41,14 +49,48 @@ public class UIManager : MonoBehaviour
         if (Instance == null) Instance = this;
         
         if (uiGroup != null) uiGroup.alpha = 0;
+        if (eindPaneel != null) eindPaneel.SetActive(false);
 
         if (leftShoulderZone != null) leftShoulderZone.SetActive(false);
         if (rightShoulderZone != null) rightShoulderZone.SetActive(false);
     }
 
-    /// <summary>
-    /// Gebruik dit in andere scripts: if(!UIManager.Instance.CanInteract()) return;
-    /// </summary>
+    // --- EHBO LOGICA KOPPELINGEN ---
+
+    // Wordt aangeroepen door de EHBOStappenChecker als het scenario klaar is
+    public void LaatEindSchermZien(bool isCorrect, List<string> behaaldeStappen)
+    {
+        isGameOver = true;
+        if (eindPaneel != null) eindPaneel.SetActive(true);
+        
+        string resultaat = isCorrect ? "<color=green>Correcte Volgorde!</color>" : "<color=red>Onjuiste Volgorde!</color>";
+        
+        if (eindTekst != null)
+        {
+            string overzicht = string.Join("\n", behaaldeStappen);
+            eindTekst.text = $"{resultaat}\n\n<b>Jouw stappen:</b>\n{overzicht}";
+        }
+        
+        StartCoroutine(Fade(uiGroup.alpha, 0, 0.5f)); // Verberg instructie UI
+    }
+
+    // Algemene functie om korte feedback tekst te tonen
+    public void ToonTekst(string bericht)
+    {
+        if (isGameOver) return;
+        StopAllCoroutines();
+        StartCoroutine(ShowTextAsync(bericht, 3f));
+    }
+
+    public void StapVoltooid(string stapNaam) 
+    {
+        if (stappenChecker != null)
+        {
+            stappenChecker.RegisterStep(stapNaam);
+        }
+        ToonTekst($"Stap voltooid: {stapNaam}");
+    }
+
     public bool CanInteract()
     {
         return !isGameOver;
@@ -60,7 +102,6 @@ public class UIManager : MonoBehaviour
         if (isGameOver) return; 
         isGameOver = true;
 
-        // Forceer alle interacties uit
         if (dogRayInteractable != null) dogRayInteractable.enabled = false;
 
         StopAllCoroutines();
@@ -71,31 +112,18 @@ public class UIManager : MonoBehaviour
     {
         isShowingText = true;
         uiText.text = dogWarningText;
-        
-        // Snel infaden van de waarschuwing
         yield return StartCoroutine(Fade(uiGroup.alpha, 1, 0.4f));
-        
-        // De speler MOET dit 3 seconden zien voor de herstart
         yield return new WaitForSeconds(3f);
-        
-        // Uitfaden voor een nette overgang
         yield return StartCoroutine(Fade(1, 0, 0.4f));
-
-        // Herstart de scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // --- FASE 1: Omstanders ---
+    // --- FASE 1 t/m 3 SEQUENCES ---
     public void ToonInstructieAankomst()
     {
         if (isGameOver) return;
-
         NPCInteraction[] alleNPCs = Object.FindObjectsByType<NPCInteraction>(FindObjectsSortMode.None);
-        foreach (NPCInteraction npc in alleNPCs)
-        {
-            npc.EnableOutlineCapability();
-        }
-
+        foreach (NPCInteraction npc in alleNPCs) { npc.EnableOutlineCapability(); }
         StopAllCoroutines();
         StartCoroutine(FadeInText(instructieAankomst));
     }
@@ -111,16 +139,12 @@ public class UIManager : MonoBehaviour
     {
         isShowingText = true;
         yield return StartCoroutine(ShowTextAsync(afterClickMessage, 3f));
-        
-        if (isGameOver) yield break; // Veiligheidscheck
-
+        if (isGameOver) yield break;
         VictimInteraction victim = Object.FindAnyObjectByType<VictimInteraction>();
         if (victim != null) victim.EnableVictimInteraction();
-        
         yield return StartCoroutine(FadeInText(finalInstruction));
     }
 
-    // --- FASE 2: Reactie checken ---
     public void ShowVictimReactionSequence()
     {
         if (isGameOver) return;
@@ -132,16 +156,12 @@ public class UIManager : MonoBehaviour
     {
         isShowingText = true;
         yield return StartCoroutine(ShowTextAsync(victimCallMessage, 4f));
-        
         if (isGameOver) yield break;
-
         yield return StartCoroutine(FadeInText(victimNoResponse));
-
         if (leftShoulderZone != null) leftShoulderZone.SetActive(true);
         if (rightShoulderZone != null) rightShoulderZone.SetActive(true);
     }
 
-    // --- FASE 3: Schudden ---
     public void StartSchudTekst()
     {
         if (isGameOver) return;
@@ -160,7 +180,7 @@ public class UIManager : MonoBehaviour
         yield return StartCoroutine(Fade(0, 1, 0.3f));
     }
 
-    // --- HULPFUNCTIES ---
+    // --- FADE HULPFUNCTIES ---
     private IEnumerator FadeInText(string message)
     {
         if (isGameOver) yield break;
@@ -199,7 +219,7 @@ public class UIManager : MonoBehaviour
         while (elapsed < time) 
         { 
             elapsed += Time.deltaTime; 
-            if (uiGroup == null) yield break; // Extra check voor scene switch
+            if (uiGroup == null) yield break; 
             uiGroup.alpha = Mathf.Lerp(start, end, elapsed / time); 
             yield return null; 
         }

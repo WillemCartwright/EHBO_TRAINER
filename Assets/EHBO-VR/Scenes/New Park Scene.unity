@@ -397,6 +397,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: npc_csl_00_character_02f_02 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6366309836495766085, guid: 80e578b2d7250b542b1c305c12391f3e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6514746788135125078, guid: 80e578b2d7250b542b1c305c12391f3e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -818,6 +822,10 @@ PrefabInstance:
       value: npc_csl_00_character_01m_01 (1)
       objectReference: {fileID: 0}
     - target: {fileID: 4700641943394876169, guid: 2a706093cdcc8d24f8b31d830f678399, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4700641943394876169, guid: 2a706093cdcc8d24f8b31d830f678399, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 0a210f8f7ba6e144aa67b6033e923985, type: 2}
@@ -993,7 +1001,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48667003}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000055657616}
+  m_LocalPosition: {x: 0, y: 0, z: 0.000016852497}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1001,8 +1009,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -615.2002, y: 202.00002}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: -15.9002075, y: 76.39977}
+  m_SizeDelta: {x: 150, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &48667005
 MonoBehaviour:
@@ -1184,6 +1192,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: ded10ab2c599f364686032caff8b08e2, type: 2}
+    - target: {fileID: 371388997940935703, guid: 2a706093cdcc8d24f8b31d830f678399, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2792499861452184002, guid: 2a706093cdcc8d24f8b31d830f678399, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -2389,7 +2401,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89046989}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000055657616}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000024391784}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2397,8 +2409,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -695.00024, y: 205.00002}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -76.000854, y: 79.39977}
+  m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &89046991
 MonoBehaviour:
@@ -4562,15 +4574,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135269799}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.67303276, y: 0.60837245, z: -0.34148368, w: 0.24555844}
-  m_LocalPosition: {x: 1.2309893, y: -2.721625, z: 1.2083852}
+  m_LocalRotation: {x: -0.6711857, y: 0.5950351, z: -0.39900658, w: 0.19035983}
+  m_LocalPosition: {x: 1.0546, y: -2.6077, z: 1.7418}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1983319090}
   - {fileID: 14155568}
   m_Father: {fileID: 1949834984}
-  m_LocalEulerAnglesHint: {x: 4.874, y: -229.57, z: 261.971}
+  m_LocalEulerAnglesHint: {x: 12.669, y: -231.368, z: 257.005}
 --- !u!1001 &138307198
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4645,37 +4657,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2847952609375012767, guid: 4ab518db7d743844a826e15eb46a4711, type: 3}
   m_PrefabInstance: {fileID: 138307198}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &139273437
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 139273438}
-  m_Layer: 0
-  m_Name: icon_heart-on_24_Filled
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &139273438
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139273437}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &142356210
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5947,8 +5928,8 @@ MonoBehaviour:
   m_text: "Helaas, je bent aangereden. \nLet eerst op je eigen veiligheid voordat
     je iemand anders gaat helpen."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 630af05b85fe9e94995b8e7952c3b1c0, type: 2}
+  m_sharedMaterial: {fileID: -6564813537843227384, guid: 630af05b85fe9e94995b8e7952c3b1c0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -11434,7 +11415,7 @@ Transform:
   m_GameObject: {fileID: 452632445}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -128.94, y: 0, z: -16.13}
+  m_LocalPosition: {x: -128.04, y: 0, z: -16.24}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14610,7 +14591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.306}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &640684632
@@ -14633,10 +14614,27 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Step 1:\t\tStep 4:\n\nStep 2:\t\tStep 5:\n\nStep 3:\t\tStep 6:"
+  m_text: 'Scenario Stappen:
+
+
+    Stap 1: Check bewustzijn
+
+    Stap 2: Bel 112
+    (laat bellen)
+
+    Stap 3: Open luchtweg
+
+    Stap 4: Hartcompressie
+
+    Stap
+    5: Beademing
+
+    Stap 6: Sluit AED aan
+
+'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 49638223fbfa5884985c2162094fb3e9, type: 2}
+  m_sharedMaterial: {fileID: -2915658088988734296, guid: 49638223fbfa5884985c2162094fb3e9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -14668,7 +14666,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -14732,7 +14730,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: -2915658088988734296, guid: 49638223fbfa5884985c2162094fb3e9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -15223,6 +15221,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8a0da5f37e0168d438b9e53bf2612654, type: 2}
+    - target: {fileID: 6552038334694914026, guid: be6cb4f0791ad3a4a80b41c3177f0aba, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6552038334694914026, guid: be6cb4f0791ad3a4a80b41c3177f0aba, type: 3}
       propertyPath: m_Controller
       value: 
@@ -18463,7 +18465,7 @@ Transform:
   m_GameObject: {fileID: 841582820}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -129.7, y: 0, z: -13.6}
+  m_LocalPosition: {x: -128.61, y: 0, z: -12.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19020,6 +19022,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8a0da5f37e0168d438b9e53bf2612654, type: 2}
+    - target: {fileID: 6259853878216040732, guid: be6cb4f0791ad3a4a80b41c3177f0aba, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6552038334694914026, guid: be6cb4f0791ad3a4a80b41c3177f0aba, type: 3}
       propertyPath: m_Controller
       value: 
@@ -22486,7 +22492,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 978611351}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22494,8 +22500,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 257.7, y: 203.9}
-  m_SizeDelta: {x: 173, y: 78}
+  m_AnchoredPosition: {x: 878.3, y: 77.8}
+  m_SizeDelta: {x: 130, y: 55}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &978611353
 MonoBehaviour:
@@ -24798,10 +24804,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Scenario Stappen
-
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -28239,7 +28242,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 308}
+  m_AnchoredPosition: {x: 19.101707, y: 299.5}
   m_SizeDelta: {x: 523, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1218593505
@@ -28290,8 +28293,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -30269,6 +30272,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8a0da5f37e0168d438b9e53bf2612654, type: 2}
+    - target: {fileID: 6552038334694914026, guid: be6cb4f0791ad3a4a80b41c3177f0aba, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6552038334694914026, guid: be6cb4f0791ad3a4a80b41c3177f0aba, type: 3}
       propertyPath: m_Controller
       value: 
@@ -35818,8 +35825,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1853202849}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: mijnUIManager
+      value: 
+      objectReference: {fileID: 2092905058}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: correctOrder.Array.size
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: npcAnimators.Array.size
@@ -35827,23 +35838,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[0]'
-      value: Bewustzijn Controleren
+      value: Start incident
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[1]'
-      value: 112 bellen
+      value: Check bewustzijn
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[2]'
-      value: Luchtweg Openen
+      value: Bel 112
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[3]'
-      value: hart compressie
+      value: Open luchtweg
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[4]'
-      value: 
+      value: Hartcompressie
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: 'correctOrder.Array.data[5]'
+      value: Beademing
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: 'correctOrder.Array.data[6]'
+      value: Sluit AED aan
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: 'correctOrder.Array.data[7]'
+      value: Hulpdiensten nemen over
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'npcAnimators.Array.data[0]'
@@ -36084,6 +36107,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: ee0adf8b2778d4d419ffae6d661dcc99, type: 2}
+    - target: {fileID: 4002613048747339467, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4325020702621780368, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -38574,7 +38601,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1722941338}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000055657616}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000024391784}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -38582,7 +38609,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -535.50024, y: 192.3}
+  m_AnchoredPosition: {x: 69.599, y: 62.799667}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1722941340
@@ -38632,8 +38659,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -41875,8 +41902,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: 288}
-  m_SizeDelta: {x: 1500, y: 250}
+  m_AnchoredPosition: {x: -4.1, y: 118.5}
+  m_SizeDelta: {x: 950, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1822089454
 CanvasGroup:
@@ -43687,7 +43714,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c6ac201742a184d4db6f571bdb5c8abd, type: 2}
     - target: {fileID: 413562869133271636, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 413562869133271636, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
       propertyPath: m_Controller
@@ -46217,6 +46244,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   uiText: {fileID: 1218593505}
   uiGroup: {fileID: 1822089454}
+  eindPaneel: {fileID: 0}
+  eindTekst: {fileID: 0}
   instructieAankomst: Er is een man op de grond gevallen!\nKlik een omstander aan
     zodat iemand in de buurt blijft.
   afterClickMessage: De omstander blijft nu bij je in de buurt.
@@ -46231,6 +46260,7 @@ MonoBehaviour:
   dogRayInteractable: {fileID: 102820329}
   leftShoulderZone: {fileID: 883459394}
   rightShoulderZone: {fileID: 603736800}
+  stappenChecker: {fileID: 1621387777}
 --- !u!1001 &2093010095
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47084,4 +47114,3 @@ SceneRoots:
   - {fileID: 1633742353}
   - {fileID: 1478374744}
   - {fileID: 1530021355}
-  - {fileID: 139273438}
