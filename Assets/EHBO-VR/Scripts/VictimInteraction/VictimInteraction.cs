@@ -34,7 +34,7 @@ public class VictimInteraction : MonoBehaviour
         if (outline != null) outline.enabled = false;
     }
 
-    public void OnVictimSelect()
+  public void OnVictimSelect()
     {
         // Check of interactie mag (niet op hond geklikt)
         if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
@@ -44,12 +44,14 @@ public class VictimInteraction : MonoBehaviour
 
         if (outline != null) outline.enabled = false;
 
-        // Start de nieuwe reeks in de UIManager
-        if (UIManager.Instance != null)
+        // --- DIT IS DE BELANGRIJKSTE WIJZIGING ---
+        // We sturen de stap naar de Checker. 
+        // De Checker zegt dan tegen de UI dat de tekst moet komen EN zet de schouders aan.
+        if (EHBOStappenChecker.Instance != null)
         {
-            UIManager.Instance.ShowVictimReactionSequence();
+            EHBOStappenChecker.Instance.RegisterStep("Bewustzijn Check");
         }
         
-        Debug.Log("Slachtoffer aangesproken, sequence gestart.");
+        Debug.Log("Slachtoffer aangesproken, stap geregistreerd in de Checker.");
     }
 }

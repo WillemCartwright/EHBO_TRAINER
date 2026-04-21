@@ -35813,6 +35813,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1600599648}
     m_Modifications:
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: victim
+      value: 
+      objectReference: {fileID: 1865992560}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -35820,6 +35824,10 @@ PrefabInstance:
       propertyPath: summaryText
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: omstanderNPC
+      value: 
+      objectReference: {fileID: 1942304188}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: summaryPanel
       value: 
@@ -35829,8 +35837,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2092905058}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: leftShoulderZone
+      value: 
+      objectReference: {fileID: 883459394}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: rightShoulderZone
+      value: 
+      objectReference: {fileID: 603736800}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: dogRayInteractable
+      value: 
+      objectReference: {fileID: 102820329}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: correctOrder.Array.size
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: npcAnimators.Array.size
@@ -35842,31 +35862,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[1]'
-      value: Check bewustzijn
+      value: Omstanders Aangesproken
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[2]'
-      value: Bel 112
+      value: Bewustzijn Check
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[3]'
-      value: Open luchtweg
+      value: 112 Bellen
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[4]'
-      value: Hartcompressie
+      value: Luchtweg Openen
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[5]'
-      value: Beademing
+      value: Hart Compressie
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[6]'
-      value: Sluit AED aan
+      value: Beademing
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[7]'
-      value: Hulpdiensten nemen over
+      value: AED Aansluiten
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: 'correctOrder.Array.data[8]'
+      value: Hulpdiensten Nemen Over
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'npcAnimators.Array.data[0]'
@@ -46257,9 +46281,6 @@ MonoBehaviour:
     bij de schouders om het slachtoffer zachtjes te schudden.'
   instructieSchuddenActive: Het slachtoffer wordt nu rustig bij zijn schouders geschud.
   dogWarningText: Er is weinig tijd, richt je aandacht niet op de hond.
-  dogRayInteractable: {fileID: 102820329}
-  leftShoulderZone: {fileID: 883459394}
-  rightShoulderZone: {fileID: 603736800}
   stappenChecker: {fileID: 1621387777}
 --- !u!1001 &2093010095
 PrefabInstance:

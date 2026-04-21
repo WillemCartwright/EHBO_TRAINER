@@ -4,16 +4,18 @@ using System.Collections;
 public class NPCInteraction : MonoBehaviour
 {
     private Outline outline;
+    private Animator animator;
     private bool hasBeenAddressed = false;
     private bool arrivalShown = false;
     
-    // BELANGRIJK: Start op false. De UIManager zet dit op true zodra de tekst fadet.
+    // Bepaalt of de NPC interactief mag zijn
     private bool canShowOutline = false; 
 
     void Awake()
     {
-        // Zoek de Outline component op de NPC
         outline = GetComponent<Outline>();
+        animator = GetComponent<Animator>();
+
         if (outline != null) 
         {
             outline.enabled = false;
@@ -21,7 +23,7 @@ public class NPCInteraction : MonoBehaviour
     }
 
     /// <summary>
-    /// Wordt aangeroepen door de UIManager zodra de instructietekst verschijnt.
+    /// Maakt de NPC de allereerste keer klikbaar (bij aankomst bij het slachtoffer).
     /// </summary>
     public void EnableOutlineCapability()
     {
@@ -29,8 +31,16 @@ public class NPCInteraction : MonoBehaviour
     }
 
     /// <summary>
-    /// Eventuele backup methode voor NPCMovement.
+    /// Wordt aangeroepen door de EHBOStappenChecker in de fase "112 Bellen".
+    /// Hiermee maken we de NPC opnieuw klikbaar voor de tweede interactie.
     /// </summary>
+    public void ResetForPhoneCall()
+    {
+        hasBeenAddressed = false; 
+        canShowOutline = true; 
+        Debug.Log("NPC gereset: Speler kan nu de opdracht geven om 112 te bellen.");
+    }
+
     public void TriggerArrivalText()
     {
         EnableOutlineCapability();
@@ -38,20 +48,17 @@ public class NPCInteraction : MonoBehaviour
         if (arrivalShown) return;
         arrivalShown = true;
 
-        if (UIManager.Instance != null)
+        if (EHBOStappenChecker.Instance != null)
         {
-            UIManager.Instance.ToonInstructieAankomst();
+            EHBOStappenChecker.Instance.RegisterStep("Start Incident");
         }
     }
 
-    // --- HOVER LOGICA (Koppelen aan Interactable Unity Event Wrapper 'When Hover Enter') ---
-
+    // --- HOVER LOGICA (Oculus Interaction SDK) ---
     public void OnHoverEnter()
     {
-        // Check 1: Mogen we überhaupt interacteren (bijv. niet op de hond geklikt)?
         if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
 
-        // De outline gaat PAS aan als canShowOutline door de UIManager op true is gezet
         if (outline != null && canShowOutline && !hasBeenAddressed)
         {
             outline.enabled = true;
@@ -60,35 +67,51 @@ public class NPCInteraction : MonoBehaviour
 
     public void OnHoverExit()
     {
-        // Altijd de outline uitzetten als de straal de NPC verlaat
         if (outline != null)
         {
             outline.enabled = false;
         }
     }
 
-    // --- SELECT LOGICA (Koppelen aan Interactable Unity Event Wrapper 'When Select') ---
-
+    // --- SELECT LOGICA (Bijv. bij klik/select van de NPC) ---
     public void AddressNPC()
     {
-        // Check 1: Is er een 'Game Over' door de hond?
+        // 1. Veiligheidscheck: Mag interactie?
         if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
 
-        // Check 2: Als de NPC al is aangesproken of de fase is nog niet gestart, stop dan.
+        // 2. Is de NPC al afgehandeld of mag hij nog niet oplichten?
         if (hasBeenAddressed || !canShowOutline) return;
         
         hasBeenAddressed = true;
 
-        // Forceer de outline uit omdat de interactie klaar is
         if (outline != null) 
         {
             outline.enabled = false;
         }
 
-        // Start de tekstreeks in de UI
-        if (UIManager.Instance != null)
+        // 3. Logica bepalen op basis van de voortgang in de StappenChecker
+        if (EHBOStappenChecker.Instance != null)
         {
-            UIManager.Instance.ShowInteractionSequence();
+            // We kijken of we al eens eerder hebben gesproken (was hij al gearriveerd?)
+            // Als de cursist nog niet bij "112 Bellen" is, is dit de eerste ontmoeting.
+            // Als hij er wel is, is dit de bel-opdracht.
+            
+            string currentStep = EHBOStappenChecker.Instance.GetCurrentStep();
+
+            if (currentStep == "112 Bellen")
+            {
+                // TWEEDE INTERACTIE: Opdracht geven
+                if (animator != null)
+                {
+                    animator.SetTrigger("startPhoneCall"); // Zorg dat deze trigger in je Animator zit
+                }
+                EHBOStappenChecker.Instance.RegisterStep("112 Opdracht Gegeven");
+            }
+            else
+            {
+                // EERSTE INTERACTIE: Kennismaking
+                EHBOStappenChecker.Instance.RegisterStep("Omstanders Aangesproken");
+            }
         }
     }
 }

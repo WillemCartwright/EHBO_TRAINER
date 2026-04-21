@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; align-items: center;">
+        <ui:Label text="EHBO Game&#10;" style="-unity-text-align: lower-center; right: 0; left: 0; font-size: 38px; -unity-font-definition: resource(&apos;Fonts &amp; Materials/Inter/Inter_18pt-Bold&apos;);" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Button text="Start game" style="-unity-font-definition: resource(&apos;Fonts &amp; Materials/Inter/Inter_18pt-Bold&apos;); align-items: center;" />
+        <ui:Button text="Help" style="-unity-font-definition: resource(&apos;Fonts &amp; Materials/Inter/Inter_18pt-Bold&apos;); align-items: center; justify-content: flex-start;" />
+    </ui:VisualElement>
+</ui:UXML>

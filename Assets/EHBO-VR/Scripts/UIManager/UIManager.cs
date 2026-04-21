@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using Oculus.Interaction; 
 
 public class UIManager : MonoBehaviour
 {
@@ -14,29 +13,18 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI uiText;
     [SerializeField] private CanvasGroup uiGroup; 
 
-    [Header("Eindscherm UI (Nieuw)")]
+    [Header("Eindscherm UI")]
     [SerializeField] private GameObject eindPaneel;
     [SerializeField] private TextMeshProUGUI eindTekst;
 
-    [Header("Fase 1: Het Ongeluk")]
+    [Header("Instructie Teksten")]
     public string instructieAankomst = "Er is een man op de grond gevallen!\nKlik de omstanders aan.";
     public string afterClickMessage = "De NPC blijft nu bij je in de buurt.";
     public string finalInstruction = "Klik het slachtoffer aan om te zien of hij reageert";
-
-    [Header("Fase 2: Slachtoffer Reactie")]
     public string victimCallMessage = "Jij: Hallo meneer, kunt u mij horen?";
-    public string victimNoResponse = "... Het slachtoffer geeft geen reactie.\nKlik op zijn schouders om hem zachtjes te schudden.";
-
-    [Header("Fase 3: Schudden")]
+    public string victimNoResponse = "... Het slachtoffer geeft geen reaction.\nSchud zachtjes aan de schouders.";
     public string instructieSchuddenActive = "Het slachtoffer wordt nu rustig bij zijn schouders geschud.";
-
-    [Header("Hond Instellingen")]
     public string dogWarningText = "Er is weinig tijd, richt je aandacht niet op de hond.";
-    [SerializeField] private RayInteractable dogRayInteractable; 
-
-    [Header("Fase 3: Objecten")]
-    [SerializeField] private GameObject leftShoulderZone;
-    [SerializeField] private GameObject rightShoulderZone;
 
     [Header("Referenties Managers")]
     [SerializeField] private EHBOStappenChecker stappenChecker;
@@ -50,14 +38,10 @@ public class UIManager : MonoBehaviour
         
         if (uiGroup != null) uiGroup.alpha = 0;
         if (eindPaneel != null) eindPaneel.SetActive(false);
-
-        if (leftShoulderZone != null) leftShoulderZone.SetActive(false);
-        if (rightShoulderZone != null) rightShoulderZone.SetActive(false);
     }
 
     // --- EHBO LOGICA KOPPELINGEN ---
 
-    // Wordt aangeroepen door de EHBOStappenChecker als het scenario klaar is
     public void LaatEindSchermZien(bool isCorrect, List<string> behaaldeStappen)
     {
         isGameOver = true;
@@ -71,10 +55,9 @@ public class UIManager : MonoBehaviour
             eindTekst.text = $"{resultaat}\n\n<b>Jouw stappen:</b>\n{overzicht}";
         }
         
-        StartCoroutine(Fade(uiGroup.alpha, 0, 0.5f)); // Verberg instructie UI
+        StartCoroutine(Fade(uiGroup.alpha, 0, 0.5f)); 
     }
 
-    // Algemene functie om korte feedback tekst te tonen
     public void ToonTekst(string bericht)
     {
         if (isGameOver) return;
@@ -96,13 +79,11 @@ public class UIManager : MonoBehaviour
         return !isGameOver;
     }
 
-    // --- HOND LOGICA ---
+    // --- HOND LOGICA (Alleen Visueel) ---
     public void ShowDogWarning()
     {
         if (isGameOver) return; 
         isGameOver = true;
-
-        if (dogRayInteractable != null) dogRayInteractable.enabled = false;
 
         StopAllCoroutines();
         StartCoroutine(DogFailSequence());
@@ -118,7 +99,7 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // --- FASE 1 t/m 3 SEQUENCES ---
+    // --- FASE SEQUENCES (Alleen Tekst & Animatie triggers) ---
     public void ToonInstructieAankomst()
     {
         if (isGameOver) return;
@@ -158,8 +139,6 @@ public class UIManager : MonoBehaviour
         yield return StartCoroutine(ShowTextAsync(victimCallMessage, 4f));
         if (isGameOver) yield break;
         yield return StartCoroutine(FadeInText(victimNoResponse));
-        if (leftShoulderZone != null) leftShoulderZone.SetActive(true);
-        if (rightShoulderZone != null) rightShoulderZone.SetActive(true);
     }
 
     public void StartSchudTekst()
