@@ -5,7 +5,7 @@ public class ShoulderSequenceManager : MonoBehaviour
     public static ShoulderSequenceManager Instance;
 
     [Header("Instellingen")]
-    [SerializeField] private float requiredTime = 2.0f;
+    [SerializeField] private float requiredTime = 2.0f; // Hoe lang moet je schudden?
     [SerializeField] private Animator victimAnimator;
 
     private bool leftHandIn = false;
@@ -13,30 +13,42 @@ public class ShoulderSequenceManager : MonoBehaviour
     private float combinedTimer = 0f;
     private bool sequenceFinished = false;
 
-    void Awake() { Instance = this; }
+    void Awake() 
+    { 
+        Instance = this; 
+    }
 
+    /// <summary>
+    /// Wordt aangeroepen door de ShoulderTouchLogic op de schouder-zones.
+    /// </summary>
     public void UpdateHandStatus(string zoneName, bool isIn)
     {
         if (sequenceFinished) return;
 
         string nameLower = zoneName.ToLower();
+        
+        // Check of de zone links of rechts is op basis van de naam van het object
         if (nameLower.Contains("l")) leftHandIn = isIn;
         if (nameLower.Contains("r")) rightHandIn = isIn;
-
-        // We roepen geen UpdateVisuals meer aan omdat er geen outlines zijn.
     }
 
     void Update()
     {
+        // Als we al klaar zijn, of de checker is nog niet bij deze stap, doe niets
         if (sequenceFinished) return;
 
-        // Logica blijft: beide controllers moeten in de zones blijven
+        // Logica: beide handen moeten tegelijkertijd in de zones zijn
         if (leftHandIn && rightHandIn)
         {
             combinedTimer += Time.deltaTime;
 
-            if (UIManager.Instance != null) UIManager.Instance.StartSchudTekst();
+            // Update de tekst in de UI naar "Slachtoffer wordt nu geschud"
+            if (UIManager.Instance != null) 
+            {
+                UIManager.Instance.StartSchudTekst();
+            }
 
+            // Als de tijd verstreken is, voltooi de reeks
             if (combinedTimer >= requiredTime)
             {
                 FinishSequence();
@@ -44,7 +56,8 @@ public class ShoulderSequenceManager : MonoBehaviour
         }
         else
         {
-            combinedTimer = 0f; // Reset als je één hand weghaalt
+            // Reset de timer zodra één van de twee handen de zone verlaat
+            combinedTimer = 0f; 
         }
     }
 
@@ -52,12 +65,22 @@ public class ShoulderSequenceManager : MonoBehaviour
     {
         sequenceFinished = true;
         
-        // Trigger de animatie van het slachtoffer
-        if (victimAnimator != null) victimAnimator.SetTrigger("StartShaking");
+        // Start de animatie waarbij het slachtoffer reageert (of juist niet)
+        if (victimAnimator != null) 
+        {
+            victimAnimator.SetTrigger("StartShaking");
+        }
 
-        Debug.Log("Succes: Schudden voltooid zonder outlines!");
+        Debug.Log("Succes: Schudden voltooid! Signaal sturen naar EHBOStappenChecker...");
+
+        // GEEF HET SEINTJE AAN DE CHECKER
+        // Dit zorgt ervoor dat de game nu pas doorgaat naar de stap "112 Bellen"
+        if (EHBOStappenChecker.Instance != null)
+        {
+            EHBOStappenChecker.Instance.OnSchudAnimatieKlaar();
+        }
         
-        // De Invoke voor CleanUpOutlines is verwijderd, 
-        // de EHBOStappenChecker handelt nu het uitzetten van de hand-models af.
+        // Optioneel: zet dit script uit om performance te sparen
+        this.enabled = false;
     }
 }

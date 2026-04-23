@@ -17,10 +17,15 @@ public class EHBOStappenChecker : MonoBehaviour
     [SerializeField] private TextMeshProUGUI summaryText;
     [SerializeField] private UIManager mijnUIManager; 
 
-    [Header("Fysieke Objecten")]
-    [SerializeField] private VictimInteraction victim;
+    [Header("Fysieke Objecten - Zones")]
     [SerializeField] private GameObject leftShoulderZone;
     [SerializeField] private GameObject rightShoulderZone;
+    [SerializeField] private GameObject zoneVoorhoofd;
+    [SerializeField] private GameObject zoneKin;
+
+    [Header("Fysieke Objecten - Overig")]
+    [SerializeField] private VictimInteraction victim;
+    [SerializeField] private NPCInteraction omstanderNPC; 
 
     [Header("Ghost Hands")]
     [SerializeField] private GameObject ghostHandsSchudden; 
@@ -29,18 +34,10 @@ public class EHBOStappenChecker : MonoBehaviour
     [Header("NPC Settings")]
     [SerializeField] private List<Animator> npcAnimators;
 
-    [Header("NPC Acties")]
-    [SerializeField] private NPCInteraction omstanderNPC; 
-
     void Awake()
     {
         if (Instance == null) Instance = this;
-
-        // Zet zones en ghost hands standaard uit bij de start
-        if (leftShoulderZone != null) leftShoulderZone.SetActive(false);
-        if (rightShoulderZone != null) rightShoulderZone.SetActive(false);
-        if (ghostHandsSchudden != null) ghostHandsSchudden.SetActive(false);
-        if (ghostHandsLuchtweg != null) ghostHandsLuchtweg.SetActive(false);
+        DeactiveerAlleInteracties();
     }
 
     void Start()
@@ -49,9 +46,19 @@ public class EHBOStappenChecker : MonoBehaviour
         DisplayDebugInfo();
     }
 
-    /// <summary>
-    /// Wordt aangeroepen als het incident begint (bijv. man valt neer).
-    /// </summary>
+    private void DeactiveerAlleInteracties()
+    {
+        // Zones
+        if (leftShoulderZone) leftShoulderZone.SetActive(false);
+        if (rightShoulderZone) rightShoulderZone.SetActive(false);
+        if (zoneVoorhoofd) zoneVoorhoofd.SetActive(false);
+        if (zoneKin) zoneKin.SetActive(false);
+
+        // Ghost Hands
+        if (ghostHandsSchudden) ghostHandsSchudden.SetActive(false);
+        if (ghostHandsLuchtweg) ghostHandsLuchtweg.SetActive(false);
+    }
+
     public void VictimHasFallen()
     {
         foreach (Animator anim in npcAnimators)
@@ -63,14 +70,12 @@ public class EHBOStappenChecker : MonoBehaviour
 
     public void RegisterStep(string stepName)
     {
-        // Alleen toevoegen als de stap niet al de huidige actieve stap is
         if (completedSteps.Count == 0 || completedSteps[completedSteps.Count - 1] != stepName)
         {
             completedSteps.Add(stepName);
             DisplayDebugInfo();
             TriggerFaseLogica(stepName);
 
-            // Controleer of we klaar zijn (bijv. bij de laatste stap in de lijst)
             if (completedSteps.Count >= correctOrder.Count)
             {
                 ValidateOrder();
@@ -82,16 +87,15 @@ public class EHBOStappenChecker : MonoBehaviour
     {
         if (mijnUIManager == null) return;
 
+        // Maak eerst het veld schoon voordat we de nieuwe fase opbouwen
+        DeactiveerAlleInteracties();
+
         switch (stepName)
         {
             case "Start Incident":
                 mijnUIManager.ToonInstructieAankomst();
-                // Maak alle NPC's klikbaar
                 NPCInteraction[] alleNPCs = Object.FindObjectsByType<NPCInteraction>(FindObjectsSortMode.None);
-                foreach (NPCInteraction npc in alleNPCs) 
-                { 
-                    npc.EnableOutlineCapability(); 
-                }
+                foreach (NPCInteraction npc in alleNPCs) npc.EnableOutlineCapability();
                 break;
 
             case "Omstanders Aangesproken": 
@@ -101,54 +105,38 @@ public class EHBOStappenChecker : MonoBehaviour
 
             case "Bewustzijn Check":
                 mijnUIManager.ShowVictimReactionSequence();
-                // Activeer de schouder-interactie
-                if (leftShoulderZone != null) leftShoulderZone.SetActive(true);
-                if (rightShoulderZone != null) rightShoulderZone.SetActive(true);
-                if (ghostHandsSchudden != null) ghostHandsSchudden.SetActive(true);
-                
-                // Na 5 seconden schudden gaan we automatisch door naar 112
-                Invoke("OnSchudAnimatieKlaar", 5f);
+                if (leftShoulderZone) leftShoulderZone.SetActive(true);
+                if (rightShoulderZone) rightShoulderZone.SetActive(true);
+                if (ghostHandsSchudden) ghostHandsSchudden.SetActive(true);
                 break;
 
             case "112 Bellen":
-                // Ruim de schud-fase op
-                if (leftShoulderZone != null) leftShoulderZone.SetActive(false);
-                if (rightShoulderZone != null) rightShoulderZone.SetActive(false);
-                if (ghostHandsSchudden != null) ghostHandsSchudden.SetActive(false);
-
-                mijnUIManager.ToonTekst("Klik op de omstander en zeg: 'Bel 112, we hebben een hartstilstand!'");
-
-                // Maak de NPC weer klikbaar voor de telefoon actie
+                mijnUIManager.ToonTekst("Het slachtoffer is bewusteloos. Vertel de omstander om 112 te bellen.");
                 if (omstanderNPC != null) omstanderNPC.ResetForPhoneCall();
                 break;
 
             case "Luchtweg Openen":
-                mijnUIManager.ToonTekst("Pas de kinlift toe om de luchtweg te openen.");
-                if (ghostHandsLuchtweg != null) ghostHandsLuchtweg.SetActive(true);
+                if (zoneVoorhoofd) zoneVoorhoofd.SetActive(true);
+                if (zoneKin) zoneKin.SetActive(true);
+                if (ghostHandsLuchtweg) ghostHandsLuchtweg.SetActive(true);
+                
+                mijnUIManager.ToonTekst("Plaats één hand op het voorhoofd en twee vingers onder de kin.");
+                break;
+                
+            case "Hart Compressie":
+                mijnUIManager.ToonTekst("Start nu met 30 borstcompressies.");
+                // Hier komen later je reanimatie-zones
                 break;
         }
     }
 
-    public void OnSchudAnimatieKlaar()
-    {
-        RegisterStep("112 Bellen");
-    }
+    public void OnSchudAnimatieKlaar() => RegisterStep("112 Bellen");
 
-    public void StartPhoneTimer()
-    {
-        // Start de timer van 5 seconden voor de telefoon-actie (animatie van NPC)
-        Invoke("OnPhoneCallFinished", 5f);
-    }
+    public void StartPhoneTimer() => Invoke("OnPhoneCallFinished", 5f);
 
-    private void OnPhoneCallFinished()
-    {
-        RegisterStep("Luchtweg Openen");
-    }
+    private void OnPhoneCallFinished() => RegisterStep("Luchtweg Openen");
 
-    public string GetCurrentStep()
-    {
-        return completedSteps.Count > 0 ? completedSteps[completedSteps.Count - 1] : "";
-    }
+    public string GetCurrentStep() => completedSteps.Count > 0 ? completedSteps[completedSteps.Count - 1] : "";
 
     private void DisplayDebugInfo()
     {
@@ -164,7 +152,6 @@ public class EHBOStappenChecker : MonoBehaviour
     private void ValidateOrder()
     {
         bool isCorrect = true;
-        // Simpele check: komt onze lijst overeen met de correctOrder lijst?
         for (int i = 0; i < correctOrder.Count; i++)
         {
             if (i >= completedSteps.Count || completedSteps[i] != correctOrder[i])
@@ -178,16 +165,13 @@ public class EHBOStappenChecker : MonoBehaviour
 
     private void ShowSummary(bool isCorrect)
     {
-        if (summaryPanel != null) summaryPanel.SetActive(true);
-        if (summaryText != null)
+        DeactiveerAlleInteracties(); // Alles uit bij einde
+        if (summaryPanel) summaryPanel.SetActive(true);
+        if (summaryText)
         {
             string result = isCorrect ? "<color=green>Correct!</color>" : "<color=red>Foutieve volgorde!</color>";
             summaryText.text = $"Eindresultaat: {result}\nStappen voltooid: {completedSteps.Count}";
         }
-        
-        if (mijnUIManager != null) 
-        {
-            mijnUIManager.LaatEindSchermZien(isCorrect, completedSteps);
-        }
+        if (mijnUIManager) mijnUIManager.LaatEindSchermZien(isCorrect, completedSteps);
     }
 }
