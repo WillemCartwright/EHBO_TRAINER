@@ -7,7 +7,10 @@ public class NPCInteraction : MonoBehaviour
     private Animator animator;
     private bool hasBeenAddressed = false;
     private bool arrivalShown = false;
-    
+
+    [Header("Phone Settings")]
+    [SerializeField] private GameObject phone; // Sleep hier je 'phone' model in via de Inspector
+
     // Bepaalt of de NPC interactief mag zijn
     private bool canShowOutline = false; 
 
@@ -20,20 +23,19 @@ public class NPCInteraction : MonoBehaviour
         {
             outline.enabled = false;
         }
+
+        // Zorg dat de telefoon onzichtbaar is bij de start van de game
+        if (phone != null)
+        {
+            phone.SetActive(false);
+        }
     }
 
-    /// <summary>
-    /// Maakt de NPC de allereerste keer klikbaar (bij aankomst bij het slachtoffer).
-    /// </summary>
     public void EnableOutlineCapability()
     {
         canShowOutline = true;
     }
 
-    /// <summary>
-    /// Wordt aangeroepen door de EHBOStappenChecker in de fase "112 Bellen".
-    /// Hiermee maken we de NPC opnieuw klikbaar voor de tweede interactie.
-    /// </summary>
     public void ResetForPhoneCall()
     {
         hasBeenAddressed = false; 
@@ -54,7 +56,7 @@ public class NPCInteraction : MonoBehaviour
         }
     }
 
-    // --- HOVER LOGICA (Oculus Interaction SDK) ---
+    // --- HOVER LOGICA ---
     public void OnHoverEnter()
     {
         if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
@@ -73,13 +75,10 @@ public class NPCInteraction : MonoBehaviour
         }
     }
 
-    // --- SELECT LOGICA (Bijv. bij klik/select van de NPC) ---
+    // --- SELECT LOGICA ---
     public void AddressNPC()
     {
-        // 1. Veiligheidscheck: Mag interactie?
         if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
-
-        // 2. Is de NPC al afgehandeld of mag hij nog niet oplichten?
         if (hasBeenAddressed || !canShowOutline) return;
         
         hasBeenAddressed = true;
@@ -89,23 +88,25 @@ public class NPCInteraction : MonoBehaviour
             outline.enabled = false;
         }
 
-        // 3. Logica bepalen op basis van de voortgang in de StappenChecker
         if (EHBOStappenChecker.Instance != null)
         {
-            // We kijken of we al eens eerder hebben gesproken (was hij al gearriveerd?)
-            // Als de cursist nog niet bij "112 Bellen" is, is dit de eerste ontmoeting.
-            // Als hij er wel is, is dit de bel-opdracht.
-            
             string currentStep = EHBOStappenChecker.Instance.GetCurrentStep();
 
             if (currentStep == "112 Bellen")
             {
-                // TWEEDE INTERACTIE: Opdracht geven
+                // --- TWEEDE INTERACTIE: Telefoon activeren ---
                 if (animator != null)
                 {
-                    animator.SetTrigger("startPhoneCall"); // Zorg dat deze trigger in je Animator zit
+                    animator.SetTrigger("startPhoneCall");
                 }
-                EHBOStappenChecker.Instance.RegisterStep("112 Opdracht Gegeven");
+
+                if (phone != null)
+                {
+                    phone.SetActive(true);
+                }
+
+                // FIX: Start de timer in de EHBOStappenChecker script!
+                EHBOStappenChecker.Instance.StartPhoneTimer();
             }
             else
             {
