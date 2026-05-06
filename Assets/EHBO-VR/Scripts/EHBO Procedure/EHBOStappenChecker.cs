@@ -34,6 +34,9 @@ public class EHBOStappenChecker : MonoBehaviour
     [Header("NPC Settings")]
     [SerializeField] private List<Animator> npcAnimators;
 
+    [Header("Klembord Koppeling")]
+    [SerializeField] private clipboard mijnKlembord;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -73,6 +76,11 @@ public class EHBOStappenChecker : MonoBehaviour
         if (completedSteps.Count == 0 || completedSteps[completedSteps.Count - 1] != stepName)
         {
             completedSteps.Add(stepName);
+            if (mijnKlembord != null) 
+            {
+            mijnKlembord.RegisterTaskCompletion(stepName);
+            }
+            
             DisplayDebugInfo();
             TriggerFaseLogica(stepName);
 
