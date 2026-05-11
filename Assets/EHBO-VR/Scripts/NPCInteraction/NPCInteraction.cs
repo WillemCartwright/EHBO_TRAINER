@@ -9,9 +9,8 @@ public class NPCInteraction : MonoBehaviour
     private bool arrivalShown = false;
 
     [Header("Phone Settings")]
-    [SerializeField] private GameObject phone; // Sleep hier je 'phone' model in via de Inspector
+    [SerializeField] private GameObject phone; 
 
-    // Bepaalt of de NPC interactief mag zijn
     private bool canShowOutline = false; 
 
     void Awake()
@@ -24,7 +23,6 @@ public class NPCInteraction : MonoBehaviour
             outline.enabled = false;
         }
 
-        // Zorg dat de telefoon onzichtbaar is bij de start van de game
         if (phone != null)
         {
             phone.SetActive(false);
@@ -59,8 +57,6 @@ public class NPCInteraction : MonoBehaviour
     // --- HOVER LOGICA ---
     public void OnHoverEnter()
     {
-        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
-
         if (outline != null && canShowOutline && !hasBeenAddressed)
         {
             outline.enabled = true;
@@ -76,43 +72,43 @@ public class NPCInteraction : MonoBehaviour
     }
 
     // --- SELECT LOGICA ---
-    public void AddressNPC()
-    {
-        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
-        if (hasBeenAddressed || !canShowOutline) return;
-        
-        hasBeenAddressed = true;
+public void AddressNPC()
+{
+    if (hasBeenAddressed || !canShowOutline) return;
 
-        if (outline != null) 
+    if (EHBOStappenChecker.Instance != null)
+    {
+        string currentStep = EHBOStappenChecker.Instance.GetCurrentStep();
+
+        // Als we net klaar zijn met Omstanders, is de volgende logische klik voor 112
+        if (currentStep == "Bewustzijn Check") 
         {
-            outline.enabled = false;
+            hasBeenAddressed = true;
+            if (outline != null) outline.enabled = false;
+
+            // We vertellen de checker direct: de 112 stap is nu gedaan!
+            EHBOStappenChecker.Instance.RegisterStep("112 Bellen");
+            StartCalling112();
+        }
+        else if (currentStep == "Start Incident" || string.IsNullOrEmpty(currentStep))
+        {
+            hasBeenAddressed = true;
+            if (outline != null) outline.enabled = false;
+            EHBOStappenChecker.Instance.RegisterStep("Omstanders Aangesproken");
+        }
+    }
+}
+
+    public void StartCalling112()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("startPhoneCall");
         }
 
-        if (EHBOStappenChecker.Instance != null)
+        if (phone != null)
         {
-            string currentStep = EHBOStappenChecker.Instance.GetCurrentStep();
-
-            if (currentStep == "112 Bellen")
-            {
-                // --- TWEEDE INTERACTIE: Telefoon activeren ---
-                if (animator != null)
-                {
-                    animator.SetTrigger("startPhoneCall");
-                }
-
-                if (phone != null)
-                {
-                    phone.SetActive(true);
-                }
-
-                // FIX: Start de timer in de EHBOStappenChecker script!
-                EHBOStappenChecker.Instance.StartPhoneTimer();
-            }
-            else
-            {
-                // EERSTE INTERACTIE: Kennismaking
-                EHBOStappenChecker.Instance.RegisterStep("Omstanders Aangesproken");
-            }
+            phone.SetActive(true);
         }
     }
 }

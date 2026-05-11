@@ -15,6 +15,7 @@ public class scriptbasisdetectie : MonoBehaviour
     private float elapsedActionTime = 0.0f;
     private bool isCountingActionTime = false;
     private BoxCollider triggerCollider;
+    private bool isTaskFinished = false; // Voorkom dat de taak meerdere keren vuurt
 
     void Start()
     {
@@ -23,56 +24,69 @@ public class scriptbasisdetectie : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        // FIX 1: Luister naar beide tags
+        if (other.CompareTag("Player") || other.CompareTag("GameController"))
         {
+            if (isTaskFinished) return;
+
             isCountingActionTime = true;
+            Debug.Log("Hand gedetecteerd op schouder. Timer loopt...");
 
             if (triggerCollider != null)
                 triggerCollider.size *= 3f;
 
             foreach (GameObject obj in objectsToDeActivateOnEnter)
-                obj.SetActive(false);
+                if (obj != null) obj.SetActive(false);
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        // FIX 2: Ook hier beide tags controleren
+        if (other.CompareTag("Player") || other.CompareTag("GameController"))
         {
             isCountingActionTime = false;
             elapsedActionTime = 0.0f;
+            Debug.Log("Handen van schouders afgehaald. Timer gereset.");
 
             if (triggerCollider != null)
                 triggerCollider.size /= 3f;
 
-            foreach (GameObject obj in objectsToActivateOnExit)
-                obj.SetActive(true);
+            // Alleen activeren op exit als de taak NIET af is (bijv. ghost hands terugzetten)
+            if (!isTaskFinished)
+            {
+                foreach (GameObject obj in objectsToActivateOnExit)
+                    if (obj != null) obj.SetActive(true);
+            }
         }
     }
 
     void Update()
     {
-        if (isCountingActionTime)
+        if (isCountingActionTime && !isTaskFinished)
         {
             elapsedActionTime += Time.deltaTime;
 
             if (elapsedActionTime >= requiredDuration)
             {
                 CompleteTask();
-                isCountingActionTime = false;
             }
         }
     }
 
     public void CompleteTask()
     {
-        if (clipboardTasks != null)
+        isTaskFinished = true;
+        isCountingActionTime = false;
+        Debug.Log("<color=green>Schudden voltooid! Seintje sturen naar Checker...</color>");
+
+        // FIX 3: Direct de StappenChecker aanroepen in plaats van alleen het clipboard
+        if (EHBOStappenChecker.Instance != null)
         {
-            clipboardTasks.RegisterTaskCompletion(taskToComplete);
+            EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
         }
-        else
-        {
-            Debug.LogError("ClipboardTasks reference is not assigned in the inspector.");
-        }
+
+        // Optioneel: Zet de schouderzone zelf uit zodat je niet per ongeluk opnieuw triggert
+        this.gameObject.SetActive(false);
     }
 }

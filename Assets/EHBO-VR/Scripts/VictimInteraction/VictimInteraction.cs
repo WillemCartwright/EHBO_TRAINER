@@ -12,7 +12,8 @@ public class VictimInteraction : MonoBehaviour
         if (outline != null) outline.enabled = false;
     }
 
-    // Wordt aangeroepen door UIManager zodra de tekst 'Klik het slachtoffer aan' verschijnt
+    // Wordt nu direct aangeroepen door de EHBOStappenChecker 
+    // zodra de stap 'Omstanders Aangesproken' is voltooid.
     public void EnableVictimInteraction()
     {
         canInteract = true;
@@ -20,9 +21,8 @@ public class VictimInteraction : MonoBehaviour
 
     public void OnHoverEnter()
     {
-        // Check of interactie mag (niet op hond geklikt)
-        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
-
+        // De check op UIManager.Instance.CanInteract() is verwijderd 
+        // zodat we niet meer afhankelijk zijn van lopende tekst-tijden.
         if (outline != null && canInteract && !hasBeenClicked)
         {
             outline.enabled = true;
@@ -34,24 +34,22 @@ public class VictimInteraction : MonoBehaviour
         if (outline != null) outline.enabled = false;
     }
 
-  public void OnVictimSelect()
+    public void OnVictimSelect()
     {
-        // Check of interactie mag (niet op hond geklikt)
-        if (UIManager.Instance != null && !UIManager.Instance.CanInteract()) return;
-
+        // Alleen actie ondernemen als interactie is vrijgegeven en nog niet is uitgevoerd
         if (!canInteract || hasBeenClicked) return;
+        
         hasBeenClicked = true;
 
         if (outline != null) outline.enabled = false;
 
-        // --- DIT IS DE BELANGRIJKSTE WIJZIGING ---
-        // We sturen de stap naar de Checker. 
-        // De Checker zegt dan tegen de UI dat de tekst moet komen EN zet de schouders aan.
+        // Geef direct het seintje aan de checker.
+        // De checker zal nu direct de Schouder-Master-Zone aanzetten.
         if (EHBOStappenChecker.Instance != null)
         {
             EHBOStappenChecker.Instance.RegisterStep("Bewustzijn Check");
         }
         
-        Debug.Log("Slachtoffer aangesproken, stap geregistreerd in de Checker.");
+        Debug.Log("Slachtoffer geselecteerd: Stap 'Bewustzijn Check' direct doorgegeven.");
     }
 }

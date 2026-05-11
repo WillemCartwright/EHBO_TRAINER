@@ -19,7 +19,6 @@ public class NPCMovement : MonoBehaviour
     private AudioSource dogAudio;
     private int currentWaypoint = 0;
     private bool hasArrivedAtFinal = false;
-    private bool isMoving = false;
 
     void Start()
     {
@@ -31,7 +30,7 @@ public class NPCMovement : MonoBehaviour
     {
         if (animator == null) return;
 
-        // 1. STATUS OVERNEMEN
+        // 1. STATUS OVERNEMEN (Kijken of het incident is begonnen)
         if (victimAnimator != null)
         {
             bool isVictimShocked = victimAnimator.GetBool("shocked");
@@ -84,7 +83,6 @@ public class NPCMovement : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * 5f);
             }
             
-            // Gebruik de currentState voor de animator waarde
             float animatorSpeed = 0f;
             if (currentState == MoveState.Walk) animatorSpeed = 1f;
             if (currentState == MoveState.Run) animatorSpeed = 3f;
@@ -112,9 +110,14 @@ public class NPCMovement : MonoBehaviour
         animator.SetFloat("Speed", 0f);
         animator.SetTrigger("Arrived"); 
 
-        if (UIManager.Instance != null) 
+        // GEEN UIManager aanroep meer. 
+        // We roepen nu de interactie-logica aan op de NPC zelf.
+        NPCInteraction interactionScript = GetComponent<NPCInteraction>();
+        if (interactionScript != null)
         {
-            UIManager.Instance.ToonInstructieAankomst();
+            interactionScript.TriggerArrivalText(); 
+            // In NPCInteraction hebben we de tekst al verwijderd, 
+            // dus dit maakt alleen de outlines/interactie mogelijk.
         }
     }
 
