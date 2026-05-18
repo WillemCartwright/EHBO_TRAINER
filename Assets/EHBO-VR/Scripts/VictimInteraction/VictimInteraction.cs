@@ -21,8 +21,6 @@ public class VictimInteraction : MonoBehaviour
 
     public void OnHoverEnter()
     {
-        // De check op UIManager.Instance.CanInteract() is verwijderd 
-        // zodat we niet meer afhankelijk zijn van lopende tekst-tijden.
         if (outline != null && canInteract && !hasBeenClicked)
         {
             outline.enabled = true;

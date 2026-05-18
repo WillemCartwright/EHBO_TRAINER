@@ -20,6 +20,7 @@ public class EHBOStappenChecker : MonoBehaviour
     [Tooltip("De Master Zone voor beide schouders met het basisdetectiescript")]
     [SerializeField] private GameObject HandenDetectieSchouders;
     [SerializeField] private GameObject HandenDetectieKinlift;
+    [SerializeField] private GameObject HandenDetectieHart;
 
     [Header("Fysieke Objecten - Overig")]
     [SerializeField] private VictimInteraction victim;
@@ -28,6 +29,7 @@ public class EHBOStappenChecker : MonoBehaviour
     [Header("Ghost Hands")]
     [SerializeField] private GameObject ghostHandsSchudden; 
     [SerializeField] private GameObject ghostHandsLuchtweg; 
+    [SerializeField] private GameObject ghostHandsHartcompressie;
 
     [Header("NPC Settings")]
     [SerializeField] private List<Animator> npcAnimators;
@@ -51,10 +53,12 @@ public class EHBOStappenChecker : MonoBehaviour
     {
         if (HandenDetectieSchouders) HandenDetectieSchouders.SetActive(false);
         if (HandenDetectieKinlift) HandenDetectieKinlift.SetActive(false);
+        if (HandenDetectieHart) HandenDetectieHart.SetActive(false); // VOEG DIT TOE
 
         // Ghost Hands uitzetten
         if (ghostHandsSchudden) ghostHandsSchudden.SetActive(false);
         if (ghostHandsLuchtweg) ghostHandsLuchtweg.SetActive(false);
+        if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(false); // VOEG DIT TOE
     }
 
     public void VictimHasFallen()
@@ -107,22 +111,23 @@ private void TriggerFaseLogica(string stepName)
 
         case "112 Bellen":
             DeactiveerAlleInteracties();
-
-            if (HandenDetectieKinlift != null) 
-            {
-                HandenDetectieKinlift.SetActive(true);
-            }
-            if (ghostHandsLuchtweg != null) 
-            {
-                ghostHandsLuchtweg.SetActive(true);
-            }
+            if (HandenDetectieKinlift != null) HandenDetectieKinlift.SetActive(true);
+            if (ghostHandsLuchtweg != null) ghostHandsLuchtweg.SetActive(true);
             Debug.Log("112 Bellen voltooid. Kinlift zones zijn nu direct actief.");
             break;
 
         case "Luchtweg Openen":
-            // Deze stap wordt bereikt nadat je 2 seconden de kinlift zone hebt aangeraakt
             DeactiveerAlleInteracties(); 
-            Debug.Log("Luchtweg voltooid. Volgende fase voorbereiden...");
+            // VOEG DIT TOE: Activeer nu de hartcompressie!
+            if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
+            if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
+            Debug.Log("Luchtweg voltooid. Hartcompressie zones zijn nu actief.");
+            break;
+
+        case "Hart Compressie": // VOEG DIT GEHELE BLOK TOE
+            DeactiveerAlleInteracties();
+            Debug.Log("Hartcompressie voltooid. Volgende fase (Beademing) voorbereiden...");
+            // Hier kun je straks je Beademings-zones activeren als je die hebt!
             break;
     }
 }

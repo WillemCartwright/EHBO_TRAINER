@@ -5,7 +5,7 @@ public class TimerParkscene : MonoBehaviour
 {
     [SerializeField] GameObject timerCanvas;
     [SerializeField] TextMeshProUGUI timerparksceneText;
-    [SerializeField] float remainingTime = 300f;
+    [SerializeField] float remainingTime = 240f;
     [SerializeField] RectTransform redBar;
     
     [Header("Audio")]

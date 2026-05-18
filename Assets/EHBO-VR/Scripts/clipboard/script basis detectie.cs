@@ -8,6 +8,9 @@ public class scriptbasisdetectie : MonoBehaviour
     [SerializeField] private clipboard clipboardTasks;
     [SerializeField] private string taskToComplete;
 
+    [Header("NPC Reset Settings")]
+    [SerializeField] private NPCInteraction bystanderNPC; // Sleep hier de NPC (omstander) in!
+
     [Header("Trigger Settings")]
     [SerializeField] private List<GameObject> objectsToDeActivateOnEnter;
     [SerializeField] private List<GameObject> objectsToActivateOnExit;
@@ -15,7 +18,7 @@ public class scriptbasisdetectie : MonoBehaviour
     private float elapsedActionTime = 0.0f;
     private bool isCountingActionTime = false;
     private BoxCollider triggerCollider;
-    private bool isTaskFinished = false; // Voorkom dat de taak meerdere keren vuurt
+    private bool isTaskFinished = false; 
 
     void Start()
     {
@@ -24,7 +27,6 @@ public class scriptbasisdetectie : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // FIX 1: Luister naar beide tags
         if (other.CompareTag("Player") || other.CompareTag("GameController"))
         {
             if (isTaskFinished) return;
@@ -42,7 +44,6 @@ public class scriptbasisdetectie : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        // FIX 2: Ook hier beide tags controleren
         if (other.CompareTag("Player") || other.CompareTag("GameController"))
         {
             isCountingActionTime = false;
@@ -52,7 +53,6 @@ public class scriptbasisdetectie : MonoBehaviour
             if (triggerCollider != null)
                 triggerCollider.size /= 3f;
 
-            // Alleen activeren op exit als de taak NIET af is (bijv. ghost hands terugzetten)
             if (!isTaskFinished)
             {
                 foreach (GameObject obj in objectsToActivateOnExit)
@@ -78,15 +78,25 @@ public class scriptbasisdetectie : MonoBehaviour
     {
         isTaskFinished = true;
         isCountingActionTime = false;
-        Debug.Log("<color=green>Schudden voltooid! Seintje sturen naar Checker...</color>");
+        Debug.Log("<color=green>Schudden voltooid! Seintje sturen naar Checker en NPC resetten...</color>");
 
-        // FIX 3: Direct de StappenChecker aanroepen in plaats van alleen het clipboard
+        // 1. Registreer de stap in de checker
         if (EHBOStappenChecker.Instance != null)
         {
             EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
         }
 
-        // Optioneel: Zet de schouderzone zelf uit zodat je niet per ongeluk opnieuw triggert
+        // 2. Reset de NPC zodat de outline voor 112 weer werkt
+        if (bystanderNPC != null)
+        {
+            bystanderNPC.ResetForPhoneCall();
+        }
+        else
+        {
+            Debug.LogWarning("Geen bystanderNPC toegewezen in de Inspector van de zone!");
+        }
+
+        // De zone zelf uitschakelen zodat je niet dubbel registreert
         this.gameObject.SetActive(false);
     }
 }
