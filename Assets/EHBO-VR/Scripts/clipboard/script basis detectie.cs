@@ -4,19 +4,14 @@ using UnityEngine;
 
 public class scriptbasisdetectie : MonoBehaviour
 {
-    [SerializeField] private float requiredDuration = 4.0f;
+    [SerializeField] private float requiredDuration = 4.0f; // 4 seconden wachten
     
     [Header("Koppeling met Handen")]
     [Tooltip("Sleep hier de Ghost Hands in waar je animatie-script op staat")]
     [SerializeField] private GhostHandAnimatie ghostHandScript; 
 
-    [Header("Afronding Settings (Voor als er GEEN animatie is)")]
+    [Header("Afronding Settings (Alleen voor zones ZONDER animatie)")]
     [SerializeField] private string taskToComplete;
-    [SerializeField] private NPCInteraction bystanderNPC; 
-
-    [Header("Trigger Settings")]
-    [SerializeField] private List<GameObject> objectsToDeActivateOnEnter;
-    [SerializeField] private List<GameObject> objectsToActivateOnExit;
 
     private float elapsedActionTime = 0.0f;
     private bool isCountingActionTime = false;
@@ -27,12 +22,8 @@ public class scriptbasisdetectie : MonoBehaviour
         if (other.CompareTag("GameController"))
         {
             if (isTaskFinished) return;
-
             isCountingActionTime = true;
-            Debug.Log("<color=cyan>[ZONE]</color> GameController gedetecteerd! Timer loopt...");
-
-            foreach (GameObject obj in objectsToDeActivateOnEnter)
-                if (obj != null) obj.SetActive(false);
+            Debug.Log("<color=cyan>[ZONE]</color> Handen gedetecteerd! Timer loopt...");
         }
     }
 
@@ -42,13 +33,7 @@ public class scriptbasisdetectie : MonoBehaviour
         {
             isCountingActionTime = false;
             elapsedActionTime = 0.0f;
-            Debug.Log("<color=cyan>[ZONE]</color> GameController heeft de zone verlaten. Timer gereset.");
-
-            if (!isTaskFinished)
-            {
-                foreach (GameObject obj in objectsToActivateOnExit)
-                    if (obj != null) obj.SetActive(true);
-            }
+            Debug.Log("<color=cyan>[ZONE]</color> Handen weggehaald. Timer gereset.");
         }
     }
 
@@ -60,46 +45,36 @@ public class scriptbasisdetectie : MonoBehaviour
 
             if (elapsedActionTime >= requiredDuration)
             {
-                TriggerAnimatieOfRondAf();
+                VerwerkVierSecondenBereikt();
             }
         }
     }
 
-    private void TriggerAnimatieOfRondAf()
+    private void VerwerkVierSecondenBereikt()
     {
         isTaskFinished = true;
         isCountingActionTime = false;
         
         if (ghostHandScript != null)
         {
-            // SITUATIE 1: Er is een animatie gekoppeld (bijv. Hartcompressie).
-            // Zet het object waar het script op zit eerst weer AAN!
+            // SITUATIE 1: Er zijn handen gekoppeld (Hartcompressie)
+            // We zetten de handen aan en laten HEN de 10 seconden en de afronding regelen!
             ghostHandScript.gameObject.SetActive(true);
-            
-            Debug.Log("<color=green>[ZONE]</color> Timer gehaald! Handen geactiveerd, seintje sturen naar de animatie...");
             ghostHandScript.StartDeAnimatieEnRondAf();
+            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Handen geactiveerd, animatie start nu.");
         }
         else
         {
-            // SITUATIE 2: Vakje is LEEG (bijv. Bewustzijn Check). We ronden direct zelf af!
-            Debug.Log("<color=green>[ZONE]</color> Geen animatie gekoppeld. Taak direct afronden!");
-            RondTaakDirectAf();
+            // SITUATIE 2: Geen handen gekoppeld (Schudden / Kinlift)
+            // We ronden de taak direct zelf af via de checker
+            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Geen animatie, direct afronden.");
+            if (EHBOStappenChecker.Instance != null)
+            {
+                EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
+            }
         }
 
-        // Zet de zone uit, zijn werk zit erop
+        // Zet de zone zelf uit, zijn taak zit erop
         this.gameObject.SetActive(false);
-    }
-
-    private void RondTaakDirectAf()
-    {
-        if (EHBOStappenChecker.Instance != null)
-        {
-            EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
-        }
-
-        if (bystanderNPC != null)
-        {
-            bystanderNPC.ResetForPhoneCall();
-        }
     }
 }

@@ -118,16 +118,22 @@ private void TriggerFaseLogica(string stepName)
 
         case "Luchtweg Openen":
             DeactiveerAlleInteracties(); 
-            // VOEG DIT TOE: Activeer nu de hartcompressie!
+            // Activeer de hartcompressie zone en de handen
             if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
             if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
             Debug.Log("Luchtweg voltooid. Hartcompressie zones zijn nu actief.");
             break;
 
-        case "Hart Compressie": // VOEG DIT GEHELE BLOK TOE
-            DeactiveerAlleInteracties();
-            Debug.Log("Hartcompressie voltooid. Volgende fase (Beademing) voorbereiden...");
-            // Hier kun je straks je Beademings-zones activeren als je die hebt!
+        case "Hart Compressie": 
+            // CRUCIAL FIX: We zetten hier NIET alle interacties uit, 
+            // want de 10 seconden animatie moet NU gaan draaien!
+            
+            if (ghostHandsHartcompressie != null) 
+            {
+                ghostHandsHartcompressie.SetActive(true); // Garandeer dat ze aanstaan/blijven
+            }
+            
+            Debug.Log("Hartcompressie geregistreerd. Animatie hoort nu te spelen op de Ghost Hands.");
             break;
     }
 }
