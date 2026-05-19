@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class scriptbasisdetectie : MonoBehaviour
 {
-    [SerializeField] private float requiredDuration = 2.0f;
-    [SerializeField] private clipboard clipboardTasks;
-    [SerializeField] private string taskToComplete;
+    [SerializeField] private float requiredDuration = 4.0f;
+    
+    [Header("Koppeling met Handen")]
+    [Tooltip("Sleep hier de Ghost Hands in waar je animatie-script op staat")]
+    [SerializeField] private GhostHandAnimatie ghostHandScript; 
 
-    [Header("NPC Reset Settings")]
-    [SerializeField] private NPCInteraction bystanderNPC; // Sleep hier de NPC (omstander) in!
+    [Header("Afronding Settings (Voor als er GEEN animatie is)")]
+    [SerializeField] private string taskToComplete;
+    [SerializeField] private NPCInteraction bystanderNPC; 
 
     [Header("Trigger Settings")]
     [SerializeField] private List<GameObject> objectsToDeActivateOnEnter;
@@ -17,25 +20,16 @@ public class scriptbasisdetectie : MonoBehaviour
 
     private float elapsedActionTime = 0.0f;
     private bool isCountingActionTime = false;
-    private BoxCollider triggerCollider;
     private bool isTaskFinished = false; 
-
-    void Start()
-    {
-        triggerCollider = GetComponent<BoxCollider>();
-    }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.CompareTag("GameController"))
+        if (other.CompareTag("GameController"))
         {
             if (isTaskFinished) return;
 
             isCountingActionTime = true;
-            Debug.Log("Hand gedetecteerd op schouder. Timer loopt...");
-
-            if (triggerCollider != null)
-                triggerCollider.size *= 3f;
+            Debug.Log("<color=cyan>[ZONE]</color> GameController gedetecteerd! Timer loopt...");
 
             foreach (GameObject obj in objectsToDeActivateOnEnter)
                 if (obj != null) obj.SetActive(false);
@@ -44,14 +38,11 @@ public class scriptbasisdetectie : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player") || other.CompareTag("GameController"))
+        if (other.CompareTag("GameController"))
         {
             isCountingActionTime = false;
             elapsedActionTime = 0.0f;
-            Debug.Log("Handen van schouders afgehaald. Timer gereset.");
-
-            if (triggerCollider != null)
-                triggerCollider.size /= 3f;
+            Debug.Log("<color=cyan>[ZONE]</color> GameController heeft de zone verlaten. Timer gereset.");
 
             if (!isTaskFinished)
             {
@@ -69,34 +60,46 @@ public class scriptbasisdetectie : MonoBehaviour
 
             if (elapsedActionTime >= requiredDuration)
             {
-                CompleteTask();
+                TriggerAnimatieOfRondAf();
             }
         }
     }
 
-    public void CompleteTask()
+    private void TriggerAnimatieOfRondAf()
     {
         isTaskFinished = true;
         isCountingActionTime = false;
-        Debug.Log("<color=green>Schudden voltooid! Seintje sturen naar Checker en NPC resetten...</color>");
+        
+        if (ghostHandScript != null)
+        {
+            // SITUATIE 1: Er is een animatie gekoppeld (bijv. Hartcompressie).
+            // Zet het object waar het script op zit eerst weer AAN!
+            ghostHandScript.gameObject.SetActive(true);
+            
+            Debug.Log("<color=green>[ZONE]</color> Timer gehaald! Handen geactiveerd, seintje sturen naar de animatie...");
+            ghostHandScript.StartDeAnimatieEnRondAf();
+        }
+        else
+        {
+            // SITUATIE 2: Vakje is LEEG (bijv. Bewustzijn Check). We ronden direct zelf af!
+            Debug.Log("<color=green>[ZONE]</color> Geen animatie gekoppeld. Taak direct afronden!");
+            RondTaakDirectAf();
+        }
 
-        // 1. Registreer de stap in de checker
+        // Zet de zone uit, zijn werk zit erop
+        this.gameObject.SetActive(false);
+    }
+
+    private void RondTaakDirectAf()
+    {
         if (EHBOStappenChecker.Instance != null)
         {
             EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
         }
 
-        // 2. Reset de NPC zodat de outline voor 112 weer werkt
         if (bystanderNPC != null)
         {
             bystanderNPC.ResetForPhoneCall();
         }
-        else
-        {
-            Debug.LogWarning("Geen bystanderNPC toegewezen in de Inspector van de zone!");
-        }
-
-        // De zone zelf uitschakelen zodat je niet dubbel registreert
-        this.gameObject.SetActive(false);
     }
 }
