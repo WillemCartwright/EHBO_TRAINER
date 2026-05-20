@@ -6,6 +6,9 @@ public class GhostHandAnimatie : MonoBehaviour
     [Header("Animatie Settings")]
     [SerializeField] private Animator mijnAnimator;
     [SerializeField] private string animationTriggerName = "PlayAnim";
+    
+    [Tooltip("Hoeveel seconden duurt jouw animatie écht?")]
+    [SerializeField] private float handmatigeAnimatieDuur = 10.0f; // <-- HIER STAAT HIJ NU OP 10!
 
     [Header("Afronding Settings")]
     [SerializeField] private string taskToComplete = "Hart Compressie";
@@ -22,27 +25,19 @@ public class GhostHandAnimatie : MonoBehaviour
 
         if (mijnAnimator != null)
         {
-            // 1. Start de animatie
             mijnAnimator.SetTrigger(animationTriggerName);
-            
-            // 2. Wacht 1 frame zodat Unity de overgang kan verwerken
-            yield return null; 
-            
-            // 3. Vraag aan Unity hoe lang deze specifieke animatie duurt
-            float exacteAnimatieTijd = mijnAnimator.GetCurrentAnimatorStateInfo(0).length;
-            Debug.Log($"<color=yellow>[GHOST HANDS] Animatie duurt exact {exacteAnimatieTijd} seconden. Wachten...</color>");
-            
-            // 4. Wacht precies de lengte van de animatie
-            yield return new WaitForSeconds(exacteAnimatieTijd);
         }
         else
         {
             Debug.LogWarning("Geen Animator gekoppeld aan GhostHandAnimatie!");
-            yield return new WaitForSeconds(5.0f); // Fallback
         }
 
-        // 5. Taak afronden!
-        Debug.Log("<color=green>[GHOST HANDS] Animatie is klaar, Checker updaten!</color>");
+        // We negeren wat Unity denkt, we wachten nu ECHT 10 seconden!
+        Debug.Log($"<color=yellow>[GHOST HANDS] Handen pompen nu voor {handmatigeAnimatieDuur} seconden...</color>");
+        yield return new WaitForSeconds(handmatigeAnimatieDuur);
+
+        // Pas na 10 seconden de taak afronden
+        Debug.Log("<color=green>[GHOST HANDS] 10 seconden voorbij. Animatie klaar, Checker updaten!</color>");
         
         if (EHBOStappenChecker.Instance != null)
         {
@@ -54,7 +49,7 @@ public class GhostHandAnimatie : MonoBehaviour
             bystanderNPC.ResetForPhoneCall();
         }
         
-        // Optioneel: zet de handen na de hele actie uit zodat ze niet in beeld blijven hangen
+        // De handen weer uitzetten na de reanimatie
         this.gameObject.SetActive(false); 
     }
-}
+}  

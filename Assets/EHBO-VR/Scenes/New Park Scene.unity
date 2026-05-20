@@ -24407,9 +24407,6 @@ MonoBehaviour:
   requiredDuration: 4
   ghostHandScript: {fileID: 1362860165}
   taskToComplete: 
-  bystanderNPC: {fileID: 0}
-  objectsToDeActivateOnEnter: []
-  objectsToActivateOnExit: []
 --- !u!65 &968878568
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -28420,9 +28417,6 @@ MonoBehaviour:
   requiredDuration: 4
   ghostHandScript: {fileID: 0}
   taskToComplete: Luchtweg Openen
-  bystanderNPC: {fileID: 1942304188}
-  objectsToDeActivateOnEnter: []
-  objectsToActivateOnExit: []
 --- !u!65 &1087755492
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -34020,7 +34014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1362860163
 Transform:
   m_ObjectHideFlags: 0
@@ -34030,7 +34024,7 @@ Transform:
   m_GameObject: {fileID: 1362860162}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7581337, y: -0.14995727, z: -0.025891103, w: 0.6340945}
-  m_LocalPosition: {x: 2.841997, y: 1.4976583, z: 1.9639208}
+  m_LocalPosition: {x: 2.8585, y: 1.4955, z: 1.9782}
   m_LocalScale: {x: 0.5, y: 0.49999982, z: 0.49999988}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -34074,6 +34068,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   mijnAnimator: {fileID: 1362860164}
   animationTriggerName: PlayAnim
+  handmatigeAnimatieDuur: 10
   taskToComplete: Hart Compressie
   bystanderNPC: {fileID: 1942304188}
 --- !u!1 &1365211384
@@ -34124,9 +34119,6 @@ MonoBehaviour:
   requiredDuration: 2
   ghostHandScript: {fileID: 0}
   taskToComplete: Bewustzijn Check
-  bystanderNPC: {fileID: 1942304188}
-  objectsToDeActivateOnEnter: []
-  objectsToActivateOnExit: []
 --- !u!65 &1365211387
 BoxCollider:
   m_ObjectHideFlags: 0
