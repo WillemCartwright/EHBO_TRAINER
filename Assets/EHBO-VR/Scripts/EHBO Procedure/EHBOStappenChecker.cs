@@ -21,6 +21,7 @@ public class EHBOStappenChecker : MonoBehaviour
     [SerializeField] private GameObject HandenDetectieSchouders;
     [SerializeField] private GameObject HandenDetectieKinlift;
     [SerializeField] private GameObject HandenDetectieHart;
+    [SerializeField] private GameObject HandenDetectieBeademing;
 
     [Header("Fysieke Objecten - Overig")]
     [SerializeField] private VictimInteraction victim;
@@ -30,6 +31,7 @@ public class EHBOStappenChecker : MonoBehaviour
     [SerializeField] private GameObject ghostHandsSchudden; 
     [SerializeField] private GameObject ghostHandsLuchtweg; 
     [SerializeField] private GameObject ghostHandsHartcompressie;
+    [SerializeField] private GameObject ghostHandsBeademing;
 
     [Header("NPC Settings")]
     [SerializeField] private List<Animator> npcAnimators;
@@ -53,12 +55,13 @@ public class EHBOStappenChecker : MonoBehaviour
     {
         if (HandenDetectieSchouders) HandenDetectieSchouders.SetActive(false);
         if (HandenDetectieKinlift) HandenDetectieKinlift.SetActive(false);
-        if (HandenDetectieHart) HandenDetectieHart.SetActive(false); // VOEG DIT TOE
+        if (HandenDetectieHart) HandenDetectieHart.SetActive(false);
+        if (HandenDetectieBeademing) HandenDetectieBeademing.SetActive(false);
 
-        // Ghost Hands uitzetten
         if (ghostHandsSchudden) ghostHandsSchudden.SetActive(false);
         if (ghostHandsLuchtweg) ghostHandsLuchtweg.SetActive(false);
-        if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(false); // VOEG DIT TOE
+        if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(false);
+        if (ghostHandsBeademing) ghostHandsBeademing.SetActive(false);
     }
 
     public void VictimHasFallen()
@@ -118,22 +121,20 @@ private void TriggerFaseLogica(string stepName)
 
         case "Luchtweg Openen":
             DeactiveerAlleInteracties(); 
-            // Activeer de hartcompressie zone en de handen
             if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
             if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
             Debug.Log("Luchtweg voltooid. Hartcompressie zones zijn nu actief.");
             break;
 
         case "Hart Compressie": 
-            // CRUCIAL FIX: We zetten hier NIET alle interacties uit, 
-            // want de 10 seconden animatie moet NU gaan draaien!
-            
-            if (ghostHandsHartcompressie != null) 
-            {
-                ghostHandsHartcompressie.SetActive(true); // Garandeer dat ze aanstaan/blijven
-            }
-            
-            Debug.Log("Hartcompressie geregistreerd. Animatie hoort nu te spelen op de Ghost Hands.");
+            if (HandenDetectieBeademing) HandenDetectieBeademing.SetActive(true);
+            if (ghostHandsBeademing) ghostHandsBeademing.SetActive(true);
+            Debug.Log("Hartcompressie voltooid. Beademingsfase start NU!");
+            break;
+
+        case "Beademing": // <--- NIEUWE CASE
+            DeactiveerAlleInteracties();
+            Debug.Log("Beademing voltooid! Volgende cyclus voorbereiden...");
             break;
     }
 }
