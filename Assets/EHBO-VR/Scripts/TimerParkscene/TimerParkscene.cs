@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections; // <--- C# heeft dit nodig voor de Coroutine (wachttijd)
 
 public class TimerParkscene : MonoBehaviour
 {
@@ -9,12 +10,13 @@ public class TimerParkscene : MonoBehaviour
     [SerializeField] RectTransform redBar;
     
     [Header("Audio")]
-    [SerializeField] private AudioSource timerAudioSource; // Sleep hier je AudioSource in
-    [SerializeField] private AudioClip timerTickClip;     // Optioneel: als je een specifieke clip wilt toewijzen
+    [SerializeField] private AudioSource timerAudioSource; 
+    [SerializeField] private AudioClip timerTickClip;     
 
     [Header("References")]
     [SerializeField] IncidentCountdown incidentScript; 
     [SerializeField] EHBOStappenChecker stappenChecker; 
+    [SerializeField] GameObject clipboardGrabableObject; // <--- NEW: Sleep hier je 'clipboard grabable' in!
 
     private bool isTimerRunning = false;
     private float totalTime;
@@ -24,14 +26,17 @@ public class TimerParkscene : MonoBehaviour
         if (timerCanvas != null)
             timerCanvas.SetActive(false);
 
+        // Zorg dat het klembord onzichtbaar is zodra de scene laadt
+        if (clipboardGrabableObject != null)
+            clipboardGrabableObject.SetActive(false);
+
         totalTime = remainingTime;
         UpdateTimerDisplay();
 
-        // Zorg dat het geluid niet al speelt bij het opstarten
         if (timerAudioSource != null)
         {
             timerAudioSource.Stop(); 
-            timerAudioSource.loop = true; // Meestal wil je dat een timer-geluid herhaalt
+            timerAudioSource.loop = true; 
         }
     }
 
@@ -41,7 +46,6 @@ public class TimerParkscene : MonoBehaviour
         if (timerCanvas != null) 
             timerCanvas.SetActive(true);
         
-        // --- NIEUW: Start het geluid ---
         if (timerAudioSource != null)
         {
             if (timerTickClip != null) timerAudioSource.clip = timerTickClip;
@@ -51,10 +55,25 @@ public class TimerParkscene : MonoBehaviour
 
         if (stappenChecker != null)
         {
-            stappenChecker.VictimHasFallen();
+            stappenChecker.VictimHasFallen(); // De man begint nu te vallen!
         }
 
+        // --- NEW: Start direct de timer die 5 seconden wacht voor het klembord ---
+        StartCoroutine(WachtEnActiveerKlembord(5.0f));
+
         Debug.Log("De 300 seconden timer is gestart!");
+    }
+
+    // --- NEW: De wachtfunctie voor het klembord ---
+    private IEnumerator WachtEnActiveerKlembord(float delay)
+    {
+        yield return new WaitForSeconds(delay); // Wacht exact 5 seconden
+
+        if (clipboardGrabableObject != null)
+        {
+            clipboardGrabableObject.SetActive(true); // Zet hem aan als de man stil ligt!
+            Debug.Log("[TIMER] 5 seconden voorbij na de val. Klembord is nu zichtbaar op de grond!");
+        }
     }
 
     void Update()
@@ -73,7 +92,6 @@ public class TimerParkscene : MonoBehaviour
                 isTimerRunning = false;
                 timerparksceneText.color = Color.red;
 
-                // --- NIEUW: Stop het geluid als de tijd op is ---
                 if (timerAudioSource != null)
                 {
                     timerAudioSource.Stop();
@@ -85,7 +103,6 @@ public class TimerParkscene : MonoBehaviour
         }
     }
 
-    // De rest van je functies (UpdateRedBar, UpdateTimerDisplay, OnTriggerEnter) blijven hetzelfde...
     void UpdateRedBar()
     {
         float fraction = remainingTime / totalTime;
