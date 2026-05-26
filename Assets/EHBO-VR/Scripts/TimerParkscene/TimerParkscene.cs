@@ -1,6 +1,6 @@
 using UnityEngine;
 using TMPro;
-using System.Collections; // <--- C# heeft dit nodig voor de Coroutine (wachttijd)
+using System.Collections;
 
 public class TimerParkscene : MonoBehaviour
 {
@@ -16,17 +16,16 @@ public class TimerParkscene : MonoBehaviour
     [Header("References")]
     [SerializeField] IncidentCountdown incidentScript; 
     [SerializeField] EHBOStappenChecker stappenChecker; 
-    [SerializeField] GameObject clipboardGrabableObject; // <--- NEW: Sleep hier je 'clipboard grabable' in!
+    [SerializeField] GameObject clipboardGrabableObject; 
 
     private bool isTimerRunning = false;
     private float totalTime;
 
     void Start()
     {
-        if (timerCanvas != null)
-            timerCanvas.SetActive(false);
-
-        // Zorg dat het klembord onzichtbaar is zodra de scene laadt
+        // We zetten de timer in het script niet meer handmatig uit! 
+        // Zorg dat het klembord en de timer in de Unity Editor (Inspector) gewoon AAN staan.
+        // Dit script zet de PARENT (het klembord) uit, waardoor de timer automatisch meegaat.
         if (clipboardGrabableObject != null)
             clipboardGrabableObject.SetActive(false);
 
@@ -43,8 +42,9 @@ public class TimerParkscene : MonoBehaviour
     public void StartRealTimer()
     {
         isTimerRunning = true;
-        if (timerCanvas != null) 
-            timerCanvas.SetActive(true);
+        
+        // --- GEWIJZIGD: We halen de timerCanvas.SetActive(true) hier WEG! ---
+        // Die mag pas over 5 seconden aan als het klembord er ook is.
         
         if (timerAudioSource != null)
         {
@@ -55,24 +55,31 @@ public class TimerParkscene : MonoBehaviour
 
         if (stappenChecker != null)
         {
-            stappenChecker.VictimHasFallen(); // De man begint nu te vallen!
+            stappenChecker.VictimHasFallen(); 
         }
 
-        // --- NEW: Start direct de timer die 5 seconden wacht voor het klembord ---
+        // Start de timer die 5 seconden wacht voor het klembord én de timer
         StartCoroutine(WachtEnActiveerKlembord(5.0f));
 
         Debug.Log("De 300 seconden timer is gestart!");
     }
 
-    // --- NEW: De wachtfunctie voor het klembord ---
     private IEnumerator WachtEnActiveerKlembord(float delay)
     {
-        yield return new WaitForSeconds(delay); // Wacht exact 5 seconden
+        yield return new WaitForSeconds(delay); 
 
+        // Zet nu in één klap de ouder aan. Omdat de timer erin zit en in de editor aan staat,
+        // komt hij nu direct perfect en synchroon mee tevoorschijn!
         if (clipboardGrabableObject != null)
         {
-            clipboardGrabableObject.SetActive(true); // Zet hem aan als de man stil ligt!
-            Debug.Log("[TIMER] 5 seconden voorbij na de val. Klembord is nu zichtbaar op de grond!");
+            clipboardGrabableObject.SetActive(true); 
+            Debug.Log("[TIMER] Klembord is nu actief op de grond!");
+        }
+
+        if (timerCanvas != null)
+        {
+            timerCanvas.SetActive(true);
+            Debug.Log("[TIMER] Timer op het klembord geforceerd geactiveerd!");
         }
     }
 

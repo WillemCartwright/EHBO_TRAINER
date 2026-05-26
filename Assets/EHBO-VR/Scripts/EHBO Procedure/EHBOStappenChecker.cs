@@ -101,7 +101,7 @@ private void TriggerFaseLogica(string stepName)
             foreach (NPCInteraction npc in alleNPCs) npc.EnableOutlineCapability();
             break;
 
-        case "Omstanders Aangesproken": 
+        case "Tik de omstander aan zodat hij in de buurt blijft": 
             DeactiveerAlleInteracties();
             if (HandenDetectieSchouders) HandenDetectieSchouders.SetActive(true);
             if (ghostHandsSchudden) ghostHandsSchudden.SetActive(true);
@@ -112,27 +112,27 @@ private void TriggerFaseLogica(string stepName)
             if (omstanderNPC != null) omstanderNPC.ResetForPhoneCall();
             break;
 
-        case "112 Bellen":
+        case "Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen":
             DeactiveerAlleInteracties();
             if (HandenDetectieKinlift != null) HandenDetectieKinlift.SetActive(true);
             if (ghostHandsLuchtweg != null) ghostHandsLuchtweg.SetActive(true);
             Debug.Log("112 Bellen voltooid. Kinlift zones zijn nu direct actief.");
             break;
 
-        case "Luchtweg Openen":
+        case "Open de luchtweg van het slachtoffer door het hoofd naar achter te kantelen":
             DeactiveerAlleInteracties(); 
             if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
             if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
             Debug.Log("Luchtweg voltooid. Hartcompressie zones zijn nu actief.");
             break;
 
-        case "Hart Compressie": 
+        case "Voer 30 borstcompressies uit met een snelheid van 2 compressies per seconde": 
             if (HandenDetectieBeademing) HandenDetectieBeademing.SetActive(true);
             if (ghostHandsBeademing) ghostHandsBeademing.SetActive(true);
             Debug.Log("Hartcompressie voltooid. Beademingsfase start NU!");
             break;
 
-        case "Beademing": // <--- NIEUWE CASE
+        case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": // <--- NIEUWE CASE
             DeactiveerAlleInteracties();
             Debug.Log("Beademing voltooid! Volgende cyclus voorbereiden...");
             break;
@@ -141,7 +141,7 @@ private void TriggerFaseLogica(string stepName)
 
     // Callback voor als de NPC klaar is met bellen of animatie voltooid is
     public void StartPhoneTimer() => Invoke("OnPhoneCallFinished", 5f);
-    private void OnPhoneCallFinished() => RegisterStep("Luchtweg Openen");
+    private void OnPhoneCallFinished() => RegisterStep("Open de luchtweg van het slachtoffer door het hoofd naar achter te kantelen");
 
     private void DisplayDebugInfo()
     {

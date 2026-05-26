@@ -11,7 +11,7 @@ public class GhostHandAnimatie : MonoBehaviour
     [SerializeField] private float handmatigeAnimatieDuur = 10.0f; // <-- HIER STAAT HIJ NU OP 10!
 
     [Header("Afronding Settings")]
-    [SerializeField] private string taskToComplete = "Hart Compressie";
+    [SerializeField] private string taskToComplete = "Voer 30 borstcompressies uit met een snelheid van 2 compressies per seconde";
     [SerializeField] private NPCInteraction bystanderNPC;
 
     public void StartDeAnimatieEnRondAf()

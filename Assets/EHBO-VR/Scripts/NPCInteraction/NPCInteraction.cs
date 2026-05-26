@@ -87,14 +87,14 @@ public void AddressNPC()
             if (outline != null) outline.enabled = false;
 
             // We vertellen de checker direct: de 112 stap is nu gedaan!
-            EHBOStappenChecker.Instance.RegisterStep("112 Bellen");
+            EHBOStappenChecker.Instance.RegisterStep("Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen");
             StartCalling112();
         }
         else if (currentStep == "Start Incident" || string.IsNullOrEmpty(currentStep))
         {
             hasBeenAddressed = true;
             if (outline != null) outline.enabled = false;
-            EHBOStappenChecker.Instance.RegisterStep("Omstanders Aangesproken");
+            EHBOStappenChecker.Instance.RegisterStep("Tik de omstander aan zodat hij in de buurt blijft");
         }
     }
 }

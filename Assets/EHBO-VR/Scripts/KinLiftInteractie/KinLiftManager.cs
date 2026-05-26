@@ -58,7 +58,7 @@ public class KinliftManager : MonoBehaviour
         // Seintje naar de stappenchecker om door te gaan naar Hartcompressies
         if (EHBOStappenChecker.Instance != null)
         {
-            EHBOStappenChecker.Instance.RegisterStep("Hart Compressie");
+            EHBOStappenChecker.Instance.RegisterStep("Voer 30 borstcompressies uit met een snelheid van 2 compressies per seconde");
         }
     }
 }

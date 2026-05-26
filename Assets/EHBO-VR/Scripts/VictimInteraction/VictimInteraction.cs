@@ -13,7 +13,7 @@ public class VictimInteraction : MonoBehaviour
     }
 
     // Wordt nu direct aangeroepen door de EHBOStappenChecker 
-    // zodra de stap 'Omstanders Aangesproken' is voltooid.
+    // zodra de stap 'Tik de omstander aan zodat hij in de buurt blijft' is voltooid.
     public void EnableVictimInteraction()
     {
         canInteract = true;
