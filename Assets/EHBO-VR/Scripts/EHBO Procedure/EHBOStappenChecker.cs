@@ -132,11 +132,30 @@ private void TriggerFaseLogica(string stepName)
             Debug.Log("Hartcompressie voltooid. Beademingsfase start NU!");
             break;
 
-        case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": // <--- NIEUWE CASE
+       case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": 
             DeactiveerAlleInteracties();
             Debug.Log("Beademing voltooid! Volgende cyclus voorbereiden...");
-            break;
-    }
+            
+            GameObject omstander = GameObject.Find("npc_csl_00_character_01m_01"); // Naam klopt zo te zien perfect!
+            if (omstander != null)
+            {
+                var movement = omstander.GetComponent<NPCMovement>();
+                if (movement != null)
+                {
+                    movement.RentTerugMetAED();
+                }
+                else
+                {
+                    Debug.LogError("[STAPPENCHECKER] NPCMovement script niet gevonden op de omstander!");
+                }
+            }
+            else
+            {
+                Debug.LogError("[STAPPENCHECKER] Kan 'omstanderNPC' niet vinden in de Hierarchy!");
+            }
+
+            break; // <--- Deze staat nu weer helemaal onderaan, zodat de case ALTIJD netjes afsluit!
+            }
 }
 
     // Callback voor als de NPC klaar is met bellen of animatie voltooid is

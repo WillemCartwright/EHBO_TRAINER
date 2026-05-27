@@ -72,43 +72,74 @@ public class NPCInteraction : MonoBehaviour
     }
 
     // --- SELECT LOGICA ---
-public void AddressNPC()
-{
-    if (hasBeenAddressed || !canShowOutline) return;
-
-    if (EHBOStappenChecker.Instance != null)
+    public void AddressNPC()
     {
-        string currentStep = EHBOStappenChecker.Instance.GetCurrentStep();
+        if (hasBeenAddressed || !canShowOutline) return;
 
-        // Als we net klaar zijn met Omstanders, is de volgende logische klik voor 112
-        if (currentStep == "Bewustzijn Check") 
+        if (EHBOStappenChecker.Instance != null)
         {
-            hasBeenAddressed = true;
-            if (outline != null) outline.enabled = false;
+            string currentStep = EHBOStappenChecker.Instance.GetCurrentStep();
 
-            // We vertellen de checker direct: de 112 stap is nu gedaan!
-            EHBOStappenChecker.Instance.RegisterStep("Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen");
-            StartCalling112();
-        }
-        else if (currentStep == "Start Incident" || string.IsNullOrEmpty(currentStep))
-        {
-            hasBeenAddressed = true;
-            if (outline != null) outline.enabled = false;
-            EHBOStappenChecker.Instance.RegisterStep("Tik de omstander aan zodat hij in de buurt blijft");
+            // Als we net klaar zijn met Omstanders, is de volgende logische klik voor 112
+            if (currentStep == "Bewustzijn Check") 
+            {
+                hasBeenAddressed = true;
+                if (outline != null) outline.enabled = false;
+
+                // We vertellen de checker direct: de 112 stap is nu gedaan!
+                EHBOStappenChecker.Instance.RegisterStep("Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen");
+                StartCalling112();
+            }
+            else if (currentStep == "Start Incident" || string.IsNullOrEmpty(currentStep))
+            {
+                hasBeenAddressed = true;
+                if (outline != null) outline.enabled = false;
+                EHBOStappenChecker.Instance.RegisterStep("Tik de omstander aan zodat hij in de buurt blijft");
+            }
         }
     }
-}
 
     public void StartCalling112()
     {
-        if (animator != null)
+        // Haal de animator en het bewegingsscript op
+        Animator npcAnimator = GetComponent<Animator>();
+        NPCMovement movementScript = GetComponent<NPCMovement>();
+
+        // FORCEER DE ANIMATOR: Zet de snelheid op 0 zodat hij stopt met de Blend Tree,
+        // en activeer de belfunctie.
+        if (npcAnimator != null)
         {
-            animator.SetTrigger("startPhoneCall");
+            npcAnimator.SetFloat("Speed", 0f);
+            npcAnimator.SetTrigger("startPhoneCall");
+            Debug.Log("[INTERACTION] Trigger 'startPhoneCall' verzonden naar Animator.");
         }
 
         if (phone != null)
         {
             phone.SetActive(true);
+        }
+
+        // Start de timer. Na 7 seconden bellen stopt de animatie en rent hij weg!
+        // (Verander de 7f gerust naar de lengte van jouw specifieke bel-animatie)
+        StartCoroutine(WachtTijdensBellenEnGaRennen(7f));
+    }
+
+    private IEnumerator WachtTijdensBellenEnGaRennen(float belDuur)
+    {
+        yield return new WaitForSeconds(belDuur);
+
+        // Doe de telefoon weer in de zak
+        if (phone != null) phone.SetActive(false);
+
+        // Geef het seintje aan het NPCMovement script dat we zojuist hebben aangepast!
+        NPCMovement movementScript = GetComponent<NPCMovement>();
+        if (movementScript != null)
+        {
+            movementScript.StartRennenNaarAED();
+        }
+        else
+        {
+            Debug.LogError("[NPC] NPCMovement component niet gevonden op dit object!");
         }
     }
 }

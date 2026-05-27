@@ -8,7 +8,7 @@ public class GhostHandAnimatie : MonoBehaviour
     [SerializeField] private string animationTriggerName = "PlayAnim";
     
     [Tooltip("Hoeveel seconden duurt jouw animatie écht?")]
-    [SerializeField] private float handmatigeAnimatieDuur = 10.0f; // <-- HIER STAAT HIJ NU OP 10!
+    [SerializeField] private float handmatigeAnimatieDuur = 15.0f; // <-- HIER STAAT HIJ NU OP 10!
 
     [Header("Afronding Settings")]
     [SerializeField] private string taskToComplete = "Voer 30 borstcompressies uit met een snelheid van 2 compressies per seconde";

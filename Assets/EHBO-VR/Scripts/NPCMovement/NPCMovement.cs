@@ -20,6 +20,10 @@ public class NPCMovement : MonoBehaviour
     private int currentWaypoint = 0;
     private bool hasArrivedAtFinal = false;
 
+    // --- STATUS LOGICA ---
+    private bool isWachtendOp112 = false; 
+    private bool isWachtendBijAED = false; 
+
     void Start()
     {
         dogAudio = GetComponent<AudioSource>();
@@ -37,7 +41,7 @@ public class NPCMovement : MonoBehaviour
             animator.SetBool("shocked", isVictimShocked);
         }
 
-        // 2. BLOKKADE: Wachten op het ongeluk
+        // 2. BLOKKADE: Wachten op het ongeluk bij de start van de game
         if (!animator.GetBool("shocked"))
         {
             animator.SetFloat("Speed", 0f);
@@ -52,7 +56,7 @@ public class NPCMovement : MonoBehaviour
             dogAudio.Play();
         }
 
-        // 4. Aankomst logica
+        // 4. Aankomst logica (Einde van M6 bereikt)
         if (hasArrivedAtFinal)
         {
             animator.SetFloat("Speed", 0f);
@@ -60,7 +64,15 @@ public class NPCMovement : MonoBehaviour
             return;
         }
 
-        // 5. Beweging starten
+        // 5. GEWIJZIGD: Als we wachten bij M4 of M5, stoppen we HIER de Update loop (fysieke beweging).
+        // We halen 'animator.SetFloat("Speed", 0f)' hier weg! De Animator regelt dit nu zelf via de overgangen.
+        if (isWachtendOp112 || isWachtendBijAED)
+        {
+            if (lookAtTarget != null && isWachtendOp112) LookAtTarget(); // Blijf naar slachtoffer kijken tijdens bellen
+            return;
+        }
+
+        // 6. Beweging starten
         if (waypoints.Length > 0)
         {
             MoveTowardsWaypoint();
@@ -91,7 +103,18 @@ public class NPCMovement : MonoBehaviour
         }
         else
         {
-            if (currentWaypoint < waypoints.Length - 1)
+            // Check voor M4 (Index 3): Aankomst bij het slachtoffer vóór het bellen
+            if (currentWaypoint == 3 && !isWachtendOp112 && !hasArrivedAtFinal)
+            {
+                StopBijSlachtofferVoor112();
+            }
+            // Check voor M5 (Index 4): Aankomst op het parkeerterrein voor de AED
+            else if (currentWaypoint == 4 && !isWachtendBijAED)
+            {
+                StopBijAEDWachtplek();
+            }
+            // Normale doorloop naar volgende waypoints
+            else if (currentWaypoint < waypoints.Length - 1)
             {
                 currentWaypoint++;
             }
@@ -102,23 +125,60 @@ public class NPCMovement : MonoBehaviour
         }
     }
 
-    private void StopAtLastWaypoint()
+    private void StopBijSlachtofferVoor112()
     {
-        if (hasArrivedAtFinal) return; // Voorkom dubbele aanroep
-
-        hasArrivedAtFinal = true;
-        animator.SetFloat("Speed", 0f);
-        animator.SetTrigger("Arrived"); 
-
-        // GEEN UIManager aanroep meer. 
-        // We roepen nu de interactie-logica aan op de NPC zelf.
+        isWachtendOp112 = true; 
+        animator.SetFloat("Speed", 0f); // Zet eenmalig op 0 om de Blend Tree in de Shocked/Idle stand te zetten
+        currentState = MoveState.Idle;
+        
         NPCInteraction interactionScript = GetComponent<NPCInteraction>();
         if (interactionScript != null)
         {
             interactionScript.TriggerArrivalText(); 
-            // In NPCInteraction hebben we de tekst al verwijderd, 
-            // dus dit maakt alleen de outlines/interactie mogelijk.
         }
+    }
+
+    public void StartRennenNaarAED()
+    {
+        if (isWachtendOp112)
+        {
+            isWachtendOp112 = false; 
+            currentWaypoint = 4;     // Richt neus naar M5
+            currentState = MoveState.Run; 
+            
+            // We zetten de speed parameter hier alvast handmatig hoog, zodat de gedupliceerde Blend Tree weet dat hij moet RENNEN!
+            animator.SetFloat("Speed", 3f); 
+            animator.SetTrigger("GoRun"); 
+            Debug.Log("[NPC] Omstander start de sprint naar M5!");
+        }
+    }
+
+    private void StopBijAEDWachtplek()
+    {
+        isWachtendBijAED = true;
+        animator.SetFloat("Speed", 0f); // Eenmalig stopzetten van de ren-animatie bij M5
+        Debug.Log("[NPC] Omstander is bij M5 en wacht...");
+    }
+
+    public void RentTerugMetAED()
+    {
+        if (isWachtendBijAED)
+        {
+            isWachtendBijAED = false;
+            currentWaypoint = 5;         
+            currentState = MoveState.Run; 
+            animator.SetFloat("Speed", 3f); // Direct weer aanzetten voor de eindsprint
+            Debug.Log("[NPC] Omstander sprint nu terug naar M6!");
+        }
+    }
+
+    private void StopAtLastWaypoint()
+    {
+        if (hasArrivedAtFinal) return;
+
+        hasArrivedAtFinal = true;
+        animator.SetFloat("Speed", 0f);
+        animator.SetTrigger("Arrived"); 
     }
 
     private void LookAtTarget()
