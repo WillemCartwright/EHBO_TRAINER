@@ -207,7 +207,7 @@ public class NPCMovement : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
 
         // Schakel de AED in de hand uit
-        if (aedInHand != null) aedInHand.SetActive(false);
+        if (aedInHand != null) aedInHand.SetActive(false); 
 
         // Laat de AED op de grond verschijnen!
         if (aedOpGrond != null) aedOpGrond.SetActive(true);
