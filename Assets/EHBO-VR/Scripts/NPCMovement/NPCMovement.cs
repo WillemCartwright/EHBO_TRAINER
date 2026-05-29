@@ -31,14 +31,29 @@ public class NPCMovement : MonoBehaviour
     }
 
     void Update()
-    {
+    { // <--- DEZE MISTE HIER! Nu staat hij er netjes in.
         if (animator == null) return;
 
         // 1. STATUS OVERNEMEN (Kijken of het incident is begonnen)
         if (victimAnimator != null)
         {
             bool isVictimShocked = victimAnimator.GetBool("shocked");
-            animator.SetBool("shocked", isVictimShocked);
+            
+            if (!animator.GetBool("shocked") && isVictimShocked)
+            {
+                animator.SetBool("shocked", true);
+                currentState = MoveState.Run; 
+                animator.SetFloat("Speed", 3f);
+                
+                // --- DE DOODSTEEK VOOR HET GLIJDEN ---
+                animator.SetTrigger("startRunning"); 
+                
+                Debug.Log("[START] Incident begonnen! 'startRunning' trigger afgevuurd.");
+            }
+            else if (!isVictimShocked)
+            {
+                animator.SetBool("shocked", false);
+            }
         }
 
         // 2. BLOKKADE: Wachten op het ongeluk bij de start van de game
@@ -48,7 +63,7 @@ public class NPCMovement : MonoBehaviour
             return;
         }
 
-        // --- HET INCIDENT IS BEGONNEN ---
+        // --- HET INCIDENT IS VANAF HIER GEACTIVEERD ---
 
         // 3. Geluid (Blaffen/Schrikken)
         if (dogAudio != null && !dogAudio.isPlaying && !hasArrivedAtFinal) 
@@ -64,11 +79,10 @@ public class NPCMovement : MonoBehaviour
             return;
         }
 
-        // 5. GEWIJZIGD: Als we wachten bij M4 of M5, stoppen we HIER de Update loop (fysieke beweging).
-        // We halen 'animator.SetFloat("Speed", 0f)' hier weg! De Animator regelt dit nu zelf via de overgangen.
+        // 5. Wachten bij M4 of M5
         if (isWachtendOp112 || isWachtendBijAED)
         {
-            if (lookAtTarget != null && isWachtendOp112) LookAtTarget(); // Blijf naar slachtoffer kijken tijdens bellen
+            if (lookAtTarget != null && isWachtendOp112) LookAtTarget();
             return;
         }
 
@@ -128,7 +142,7 @@ public class NPCMovement : MonoBehaviour
     private void StopBijSlachtofferVoor112()
     {
         isWachtendOp112 = true; 
-        animator.SetFloat("Speed", 0f); // Zet eenmalig op 0 om de Blend Tree in de Shocked/Idle stand te zetten
+        animator.SetFloat("Speed", 0f); 
         currentState = MoveState.Idle;
         
         NPCInteraction interactionScript = GetComponent<NPCInteraction>();
@@ -143,21 +157,20 @@ public class NPCMovement : MonoBehaviour
         if (isWachtendOp112)
         {
             isWachtendOp112 = false; 
-            currentWaypoint = 4;     // Richt neus naar M5
+            currentWaypoint = 4;     
             currentState = MoveState.Run; 
             
-            // We zetten de speed parameter hier alvast handmatig hoog, zodat de gedupliceerde Blend Tree weet dat hij moet RENNEN!
             animator.SetFloat("Speed", 3f); 
             animator.SetTrigger("GoRun"); 
-            Debug.Log("[NPC] Omstander start de sprint naar M5!");
+            Debug.Log("[NPC] Omstander start the sprint naar M5!");
         }
     }
 
     private void StopBijAEDWachtplek()
     {
         isWachtendBijAED = true;
-        animator.SetFloat("Speed", 0f); // Eenmalig stopzetten van de ren-animatie bij M5
-        Debug.Log("[NPC] Omstander is bij M5 en wacht...");
+        animator.SetFloat("Speed", 0f); 
+        Debug.Log("[NPC] Omstander is bij M5 and wacht...");
     }
 
     public void RentTerugMetAED()
@@ -167,7 +180,7 @@ public class NPCMovement : MonoBehaviour
             isWachtendBijAED = false;
             currentWaypoint = 5;         
             currentState = MoveState.Run; 
-            animator.SetFloat("Speed", 3f); // Direct weer aanzetten voor de eindsprint
+            animator.SetFloat("Speed", 3f); 
             Debug.Log("[NPC] Omstander sprint nu terug naar M6!");
         }
     }

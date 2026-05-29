@@ -121,7 +121,7 @@ public class NPCInteraction : MonoBehaviour
 
         // Start de timer. Na 7 seconden bellen stopt de animatie en rent hij weg!
         // (Verander de 7f gerust naar de lengte van jouw specifieke bel-animatie)
-        StartCoroutine(WachtTijdensBellenEnGaRennen(7f));
+        StartCoroutine(WachtTijdensBellenEnGaRennen(12f));
     }
 
     private IEnumerator WachtTijdensBellenEnGaRennen(float belDuur)
