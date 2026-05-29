@@ -15,6 +15,8 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Animator victimAnimator; 
     [SerializeField] private Transform lookAtTarget;
+    [SerializeField] private GameObject aedInHand;   
+    [SerializeField] private GameObject aedOpGrond;
     
     private AudioSource dogAudio;
     private int currentWaypoint = 0;
@@ -181,7 +183,8 @@ public class NPCMovement : MonoBehaviour
             currentWaypoint = 5;         
             currentState = MoveState.Run; 
             animator.SetFloat("Speed", 3f); 
-            Debug.Log("[NPC] Omstander sprint nu terug naar M6!");
+            if (aedInHand != null) aedInHand.SetActive(true);
+            Debug.Log("[NPC] Omstander sprint nu terug naar M6 met de AED!");
         }
     }
 
@@ -192,6 +195,24 @@ public class NPCMovement : MonoBehaviour
         hasArrivedAtFinal = true;
         animator.SetFloat("Speed", 0f);
         animator.SetTrigger("Arrived"); 
+
+        // NIEUW: Start het proces om de AED netjes op de grond te leggen
+        StartCoroutine(WisselAEDOmNaAnimatie());
+    }
+
+    private IEnumerator WisselAEDOmNaAnimatie()
+    {
+        // Wacht een aantal seconden totdat de NPC op zijn knieën zit 
+        // Pas deze 2.0 seconden aan naar de lengte van jouw kniel-animatie!
+        yield return new WaitForSeconds(2.0f);
+
+        // Schakel de AED in de hand uit
+        if (aedInHand != null) aedInHand.SetActive(false);
+
+        // Laat de AED op de grond verschijnen!
+        if (aedOpGrond != null) aedOpGrond.SetActive(true);
+
+        Debug.Log("[AED] AED ligt nu succesvol aangesloten op de grond!");
     }
 
     private void LookAtTarget()
