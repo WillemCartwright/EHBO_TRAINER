@@ -12,6 +12,7 @@ TagManager:
   - Car
   - QDSUIBackplateGradient
   - NPCPlayer
+  - Chest
   layers:
   - Default
   - TransparentFX
