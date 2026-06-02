@@ -33,20 +33,20 @@ public class scriptbasisdetectie : MonoBehaviour
     }
 
     void OnTriggerExit(Collider other)
+{
+    if (other.CompareTag("GameController"))
     {
-        if (other.CompareTag("GameController"))
-        {
-            isCountingActionTime = false;
-            elapsedActionTime = 0.0f;
-            Debug.Log("<color=cyan>[ZONE]</color> Handen weggehaald. Timer gereset.");
+        isCountingActionTime = false;
+        elapsedActionTime = 0.0f;
+        Debug.Log("<color=cyan>[ZONE]</color> Handen weggehaald. Timer gereset.");
 
-            // --- TIJDELIJK UITGEZET VOOR TESTEN VAN DE POSITIE ---
-            // if (ProgressBarUI.Instance != null)
-            // {
-            //     ProgressBarUI.Instance.StopProgressBar();
-            // }
+        // DIT MOET NU WEER ACTIEF STAAN:
+        if (ProgressBarUI.Instance != null)
+        {
+            ProgressBarUI.Instance.StopProgressBar();
         }
     }
+}
 
     void Update()
     {

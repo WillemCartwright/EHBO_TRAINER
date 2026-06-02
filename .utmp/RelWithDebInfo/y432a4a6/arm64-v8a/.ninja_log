@@ -1,0 +1,12 @@
+# ninja log v5
+72	600	8021045937769348	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	7016db2c0d96794
+603	895	8021045940453764	C:/Users/Kopgr/Documents/EHBO-Trainer-Fork/EHBO_TRAINER/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/y432a4a6/obj/arm64-v8a/libswappywrapper.so	76da5ca8131c4597
+36	2530	8021045956822588	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	ac0f79257c73da18
+45	2541	8021045956853412	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	755ac493acf5b675
+18	2638	8021045958031928	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	95224a774ffac00
+63	2656	8021045958187236	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	cc8d0474dd4bf71
+1	2778	8021045959412987	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	28e447c1b393c326
+52	3127	8021045962954239	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	93f87d13379a392d
+26	3201	8021045963692047	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	642b08fca7d4da20
+10	3418	8021045965834621	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	ddab1a986446c82c
+3418	3588	8021045967486511	C:/Users/Kopgr/Documents/EHBO-Trainer-Fork/EHBO_TRAINER/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/y432a4a6/obj/arm64-v8a/libgame.so	c2d9d470077447bc
