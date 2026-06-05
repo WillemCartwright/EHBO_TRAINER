@@ -1,14 +1,44 @@
 fileFormatVersion: 2
 guid: 0f9efc8f5587b974bad7af8136973218
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ch01_body
+    second: {fileID: 2100000, guid: 9a64e24563ca4ff40b080e68dee6c350, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ch01_hair
+    second: {fileID: 2100000, guid: ec7fbc5e98362e54badcdb6a4866d925, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch01_1001_Diffuse
+    second: {fileID: 2800000, guid: 08e01cadf13c410468b62509509e4561, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch01_1001_Glossiness
+    second: {fileID: 2800000, guid: 5cc1066424b329f4db2b00ccef00392c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch01_1001_Normal
+    second: {fileID: 2800000, guid: 6424a5eafb72faa4288240ad276fb45c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch01_1001_Specular
+    second: {fileID: 2800000, guid: 6460aa45ef0c9e747a1bd3629686344d, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -16,8 +46,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -58,6 +86,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8

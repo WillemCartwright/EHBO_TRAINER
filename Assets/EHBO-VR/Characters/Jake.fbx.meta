@@ -1,14 +1,49 @@
 fileFormatVersion: 2
 guid: ee5ca5f75426a3b4695aea62b3ae1d69
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ch31_body
+    second: {fileID: 2100000, guid: aa1c7df326bb32e409868c027d089168, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ch31_hair
+    second: {fileID: 2100000, guid: 4eea12cee1062d64e8024d5fca556192, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch31_1001_Diffuse
+    second: {fileID: 2800000, guid: f9392ae281e76834c8724b68ac2ea798, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch31_1001_Glossiness
+    second: {fileID: 2800000, guid: 26cf81daa4bac934c884a7d25f6890f8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch31_1001_Normal
+    second: {fileID: 2800000, guid: dd1eb140bf5d881499a59e576a6b3876, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch31_1001_Specular
+    second: {fileID: 2800000, guid: a72234fe44b405b40ac01c484aa94c73, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch31_1002_Diffuse
+    second: {fileID: 2800000, guid: 72b96baf818988e47bf2313fe33b7521, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -16,8 +51,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -58,6 +91,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
