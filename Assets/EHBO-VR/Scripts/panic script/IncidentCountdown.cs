@@ -12,7 +12,7 @@ public class IncidentCountdown : MonoBehaviour
     [Header("Victim (De man die valt)")]
     [SerializeField] private Animator victimAnimator; 
 
-    [Header("Responders (De NPC's die rennen)")]
+    [Header("Responders (De 2 speciale NPC's die rennen)")]
     [SerializeField] private GameObject[] responders; 
 
     [Header("Other References")]
@@ -84,6 +84,7 @@ public class IncidentCountdown : MonoBehaviour
 
         Debug.Log("Delay voorbij! NPC's gaan nu rennen.");
 
+        // --- DEEL A: Jouw eigen 2 speciale responders activeren ---
         foreach (GameObject responder in responders)
         {
             if (responder != null)
@@ -97,6 +98,15 @@ public class IncidentCountdown : MonoBehaviour
                 if (movement != null) movement.enabled = true;
             }
         }
+
+        // --- DEEL B: NIEUW - Stuur alle overige achtergrond-idlers aan ---
+        CharacterSwarmer[] allIdlers = FindObjectsByType<CharacterSwarmer>(FindObjectsSortMode.None);
+        foreach (CharacterSwarmer idler in allIdlers)
+        {
+            idler.StartSurrounding();
+        }
+        
+        Debug.Log($"Geactiveerd: {allIdlers.Length} extra idlers lopen nu naar het slachtoffer!");
     }
 
     public void Activate() { IsActive = true; }
