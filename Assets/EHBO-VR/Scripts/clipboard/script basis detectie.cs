@@ -10,6 +10,12 @@ public class scriptbasisdetectie : MonoBehaviour
     [Tooltip("Sleep hier de Ghost Hands in waar je animatie-script op staat")]
     [SerializeField] private GhostHandAnimatie ghostHandScript; 
 
+    // --- NIEUWE VARIABELEN VOOR DE HAND SHADERS ---
+    [Tooltip("Sleep hier de child-mesh (Renderer) van de LINKER ghost hand in")]
+    [SerializeField] private Renderer linkeHandVanDezeStap;
+    [Tooltip("Sleep hier de child-mesh (Renderer) van de RECHTER ghost hand in")]
+    [SerializeField] private Renderer rechterHandVanDezeStap;
+
     [Header("Afronding Settings (Alleen voor zones ZONDER animatie)")]
     [SerializeField] private string taskToComplete;
 
@@ -25,28 +31,29 @@ public class scriptbasisdetectie : MonoBehaviour
             isCountingActionTime = true;
             Debug.Log("<color=cyan>[ZONE]</color> Handen gedetecteerd! Timer loopt...");
 
+            // --- DE AANPASSING HIER ---
             if (ProgressBarUI.Instance != null)
             {
-                ProgressBarUI.Instance.StartProgressBar(requiredDuration);
+                // We geven nu de benodigde tijd EN de 2 specifieke hand-renderers mee!
+                ProgressBarUI.Instance.StartProgressBar(requiredDuration, linkeHandVanDezeStap, rechterHandVanDezeStap);
             }
         }
     }
 
     void OnTriggerExit(Collider other)
-{
-    if (other.CompareTag("GameController"))
     {
-        isCountingActionTime = false;
-        elapsedActionTime = 0.0f;
-        Debug.Log("<color=cyan>[ZONE]</color> Handen weggehaald. Timer gereset.");
-
-        // DIT MOET NU WEER ACTIEF STAAN:
-        if (ProgressBarUI.Instance != null)
+        if (other.CompareTag("GameController"))
         {
-            ProgressBarUI.Instance.StopProgressBar();
+            isCountingActionTime = false;
+            elapsedActionTime = 0.0f;
+            Debug.Log("<color=cyan>[ZONE]</color> Handen weggehaald. Timer gereset.");
+
+            if (ProgressBarUI.Instance != null)
+            {
+                ProgressBarUI.Instance.StopProgressBar();
+            }
         }
     }
-}
 
     void Update()
     {
@@ -66,11 +73,11 @@ public class scriptbasisdetectie : MonoBehaviour
         isTaskFinished = true;
         isCountingActionTime = false;
         
-        // --- TIJDELIJK UITGEZET VOOR TESTEN VAN DE POSITIE ---
-        // if (ProgressBarUI.Instance != null)
-        // {
-        //     ProgressBarUI.Instance.StopProgressBar();
-        // }
+        // --- TIP: Als de shader dadelijk werkt, kun je deze weer aanzetten ---
+        if (ProgressBarUI.Instance != null)
+        {
+            ProgressBarUI.Instance.StopProgressBar();
+        }
 
         if (ghostHandScript != null)
         {
