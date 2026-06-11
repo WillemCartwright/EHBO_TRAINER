@@ -13,14 +13,25 @@ public class AEDInteraction : MonoBehaviour
     [SerializeField] private GameObject elektrodeLinksOpBorst;  
     [SerializeField] private GameObject elektrodeRechtsOpBorst; 
 
-    [Header("Victim Settings (NEW)")]
-    // Sleep hier de Animator van het slachtoffer in (de liggende man)
+    [Header("AED Kleding Wissel")]
+    [Tooltip("Sleep hier alleen de kledingstukken in die UIT moeten (bijv. T-shirt, jas, rits). NIET het hele lichaam van de man!")]
+    [SerializeField] private GameObject[] objectenDieUitMoeten; 
+    
+    [Tooltip("Sleep hier the nieuwe blote borst in die AAN moet gaan")]
+    [SerializeField] private GameObject bloteBorstMesh;    
+
+    [Header("Victim Settings & Animation")]
+    [Tooltip("Sleep hier de Animator van het slachtoffer in")]
     [SerializeField] private Animator victimAnimator; 
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip schokAudioClip;
+    [SerializeField] private AudioSource audioSource;
 
     private bool aedGeactiveerd = false;
     private bool linksGeplakt = false;
     private bool rechtsGeplakt = false;
-    private bool scenarioAfgerond = false; // Extra check zodat je niet oneindig kunt blijven klikken
+    private bool scenarioAfgerond = false; 
 
     void Start()
     {
@@ -30,11 +41,26 @@ public class AEDInteraction : MonoBehaviour
         if (elektrodeRechtsInHand != null) elektrodeRechtsInHand.SetActive(false);
         if (elektrodeLinksOpBorst != null) elektrodeLinksOpBorst.SetActive(false);
         if (elektrodeRechtsOpBorst != null) elektrodeRechtsOpBorst.SetActive(false);
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
+        // Basisstand voor de kledingstukken bij de start
+        if (objectenDieUitMoeten != null)
+        {
+            foreach (GameObject obj in objectenDieUitMoeten)
+            {
+                if (obj != null) obj.SetActive(true);
+            }
+        }
+        
+        if (bloteBorstMesh != null) bloteBorstMesh.SetActive(false);
     }
 
     public void OnRaycastHoverEnter()
     {
-        // De outline mag ook weer oplichten als de elektroden geplakt zijn en we wachten op de laatste klik
         if (aedGeactiveerd && (!linksGeplakt || !rechtsGeplakt)) return; 
         if (scenarioAfgerond) return;
 
@@ -46,52 +72,86 @@ public class AEDInteraction : MonoBehaviour
         if (outlineComponent != null) outlineComponent.enabled = false;
     }
 
-    // --- KLIK LOGICA OP DE AED ---
     public void OnAEDClicked()
     {
         if (scenarioAfgerond) return;
 
-        // EERSTE KLIK: AED openen en elektroden geven
+        // EERSTE KLIK: AED openen, kleding uit, blote borst aan
         if (!aedGeactiveerd)
         {
             aedGeactiveerd = true;
-            Debug.Log("[AED] Eerste klik: AED geopend. Elektroden verschijnen.");
+            Debug.Log("[AED] Eerste klik: AED geopend. Kleding gaat uit.");
             
             if (outlineComponent != null) outlineComponent.enabled = false;
             if (elektrodeLinksInHand != null) elektrodeLinksInHand.SetActive(true);
             if (elektrodeRechtsInHand != null) elektrodeRechtsInHand.SetActive(true);
-            return; // Stop de functie hier zodat hij niet meteen doorloopt naar de tweede klik!
+
+            if (objectenDieUitMoeten != null)
+            {
+                foreach (GameObject obj in objectenDieUitMoeten)
+                {
+                    if (obj != null) obj.SetActive(false); 
+                }
+            }
+
+            if (bloteBorstMesh != null) bloteBorstMesh.SetActive(true); 
+
+            return; 
         }
 
-        // TWEEDE KLIK: Alleen mogelijk als BEIDE elektroden op de borst zitten
-        // TWEEDE KLIK: Alleen mogelijk als BEIDE elektroden op de borst zitten
-    if (aedGeactiveerd && linksGeplakt && rechtsGeplakt)
+        // TWEEDE KLIK: Schok toedienen
+        if (aedGeactiveerd && linksGeplakt && rechtsGeplakt)
+        {
+            scenarioAfgerond = true; 
+            Debug.Log("[AED] Tweede klik: Schok wordt toegediend!");
+
+            if (outlineComponent != null) outlineComponent.enabled = false;
+
+            // Trigger het schudden (als de animator is ingevuld)
+            if (victimAnimator != null)
+            {
+                victimAnimator.gameObject.SetActive(true); 
+                victimAnimator.SetBool("shaking", true);   
+            }
+
+            // Speel geluid af en bereken de lengte van de audio
+            float wachtTijd = 0f;
+            if (audioSource != null && schokAudioClip != null)
+            {
+                audioSource.PlayOneShot(schokAudioClip);
+                wachtTijd = schokAudioClip.length; // Pakt exact de seconden van de audio clip
+                Debug.Log($"[AED] Audio gestart. Lengte: {wachtTijd} seconden.");
+            }
+
+            // Start de timer die wacht tot de audio klaar is
+            Invoke("ActiveerBorstcompressieHerstart", wachtTijd);
+
+            // Meld de AED stap aan de stappenchecker (Exact met Hoofdletters!)
+            if (EHBOStappenChecker.Instance != null)
+            {
+                EHBOStappenChecker.Instance.RegisterStep("AED aansluiten");
+            }
+        }
+    }
+
+    // --- DE TIMING FUNCTIE DIE GEACTIVEERD WORDT ALS DE AUDIO KLAAR IS ---
+    private void ActiveerBorstcompressieHerstart()
     {
-        scenarioAfgerond = true; 
-        Debug.Log("[AED] Tweede klik: Elektroden zijn geplakt. Schok wordt toegediend, slachtoffer begint te schudden!");
+        Debug.Log("<color=green>[AED]</color> Audio is klaar! Schudden stoppen en seintje naar Stappenchecker sturen...");
 
-        if (outlineComponent != null) outlineComponent.enabled = false;
-
-        // 1. Trigger de animatie op het slachtoffer
+        // Stop het schudden van het slachtoffer
         if (victimAnimator != null)
         {
-            victimAnimator.SetBool("shaking", true);
+            victimAnimator.SetBool("shaking", false);
         }
 
-        // 2. NIEUW: Meld de stap aan de stappenchecker zodat het klembord afvinkt!
+        // Meld de herhaal-stap aan de stappenchecker. Die zet nu de Ghost Hands en zones aan!
         if (EHBOStappenChecker.Instance != null)
         {
-            // LET OP: Deze tekst moet EXACT zo in je 'correctOrder' lijst staan in Unity!
-            EHBOStappenChecker.Instance.RegisterStep("AED Aansluiten");
+            EHBOStappenChecker.Instance.RegisterStep("Herhaal borstcompressies");
         }
-        else
-        {
-            Debug.LogError("[AED] EHBOStappenChecker Instance is niet gevonden in de scene!");
-        }
-    }
     }
 
-    // --- PLAK LOGICA ---
     public void PlakElektrode(bool isLinkerHand)
     {
         if (!aedGeactiveerd) return;
@@ -111,11 +171,9 @@ public class AEDInteraction : MonoBehaviour
             Debug.Log("[AED] Rechts geplakt!");
         }
 
-        // Als ze nu allebei geplakt zijn, geven we een seintje dat de speler weer op de AED mag klikken
         if (linksGeplakt && rechtsGeplakt)
         {
-            Debug.Log("[AED] Beide elektroden zitten erop! Richt je Raycast weer op de AED en klik om de schok te geven.");
-            // Optioneel: hier kun je de outline alvast weer aanzetten als hint, of een geluidje afspelen
+            Debug.Log("[AED] Beide elektroden zitten erop!");
         }
     }
 }

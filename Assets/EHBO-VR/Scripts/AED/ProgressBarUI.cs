@@ -1,36 +1,48 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI; // Zorg dat deze erbij staat voor de Image component
 
 public class ProgressBarUI : MonoBehaviour
 {
     public static ProgressBarUI Instance;
 
-    private string shaderProgressName = "_FillAmount"; 
-    
-    // Deze bewaren we tijdelijk voor de stap die NU actief is
-    private Material currentLeftHandMat;
-    private Material currentRightHandMat;
-    
+    [Header("UI Elementen")]
+    [SerializeField] private GameObject visualCanvasGroup; // Het paneel/canvas van de balk
+    [SerializeField] private Image progressFillImage;       // De daadwerkelijke vullende balk (UI Image)
+
     private Coroutine countdownCoroutine;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null) 
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Start()
+    {
+        // Zorg dat de balk onzichtbaar is bij de start van de game
+        if (visualCanvasGroup != null) visualCanvasGroup.SetActive(false);
+        if (progressFillImage != null) progressFillImage.fillAmount = 0f;
     }
 
     /// <summary>
-    /// Start de voortgang en vertel het script DIRECT welke handen er gevuld moeten worden.
+    /// Start de voortgangsbalk op het scherm voor de opggeven tijd.
+    /// (De extra mesh-parameters vangen we op zodat je zone-script niet crashed!)
     /// </summary>
-    public void StartProgressBar(float duration, Renderer leftHand, Renderer rightHand)
+    public void StartProgressBar(float duration, Renderer leftHand = null, Renderer rightHand = null)
     {
         if (countdownCoroutine != null) 
         {
             StopCoroutine(countdownCoroutine);
         }
 
-        // Pak de materialen van de specifieke handen die nu in de zone zitten
-        if (leftHand != null) currentLeftHandMat = leftHand.material;
-        if (rightHand != null) currentRightHandMat = rightHand.material;
+        if (visualCanvasGroup != null) visualCanvasGroup.SetActive(true);
         
         countdownCoroutine = StartCoroutine(AnimateBar(duration));
     }
@@ -43,41 +55,28 @@ public class ProgressBarUI : MonoBehaviour
             countdownCoroutine = null; 
         }
 
-        ResetCurrentHandMaterials();
+        if (progressFillImage != null) progressFillImage.fillAmount = 0f;
+        if (visualCanvasGroup != null) visualCanvasGroup.SetActive(false);
     }
 
     private IEnumerator AnimateBar(float duration)
     {
         float elapsed = 0f;
-        UpdateHandMaterials(0f);
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float progress = elapsed / duration;
             
-            UpdateHandMaterials(progress);
+            if (progressFillImage != null)
+            {
+                progressFillImage.fillAmount = progress;
+            }
 
             yield return null;
         }
 
         countdownCoroutine = null;
-        ResetCurrentHandMaterials(); 
-    }
-
-    private void UpdateHandMaterials(float value)
-    {
-        if (currentLeftHandMat != null) currentLeftHandMat.SetFloat(shaderProgressName, value);
-        if (currentRightHandMat != null) currentRightHandMat.SetFloat(shaderProgressName, value);
-    }
-
-    private void ResetCurrentHandMaterials()
-    {
-        if (currentLeftHandMat != null) currentLeftHandMat.SetFloat(shaderProgressName, 0f);
-        if (currentRightHandMat != null) currentRightHandMat.SetFloat(shaderProgressName, 0f);
-        
-        // Maak de referenties weer leeg voor de volgende stap
-        currentLeftHandMat = null;
-        currentRightHandMat = null;
+        if (visualCanvasGroup != null) visualCanvasGroup.SetActive(false);
     }
 }

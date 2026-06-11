@@ -68,7 +68,6 @@ public class EHBOStappenChecker : MonoBehaviour
         if (ghostHandsBeademing) ghostHandsBeademing.SetActive(false);
     }
 
-    // --- HIER PASSEREN WE HET MOMENT AAN ---
     public void VictimHasFallen()
     {
         foreach (Animator anim in npcAnimators)
@@ -76,7 +75,6 @@ public class EHBOStappenChecker : MonoBehaviour
             if (anim != null) anim.SetBool("shocked", true);
         }
 
-        // --- NIEUW: Zet de telefoon van de speler DIRECT uit bij de val! ---
         if (spelerTelefoon != null)
         {
             spelerTelefoon.SetActive(false);
@@ -90,8 +88,8 @@ public class EHBOStappenChecker : MonoBehaviour
         RegisterStep("Start Incident");
     }
 
-   public void RegisterStep(string stepName)
-   {
+    public void RegisterStep(string stepName)
+    {
         if (completedSteps.Count == 0 || completedSteps[completedSteps.Count - 1] != stepName)
         {
             completedSteps.Add(stepName);
@@ -102,6 +100,8 @@ public class EHBOStappenChecker : MonoBehaviour
             Debug.Log("<color=green>STAP VOLTOOID:</color> " + stepName);
             DeactiveerAlleInteracties();
             TriggerFaseLogica(stepName);
+
+            DisplayDebugInfo(); // Update ook meteen het debug-paneel in VR
 
             if (completedSteps.Count >= correctOrder.Count)
                 ValidateOrder();
@@ -149,7 +149,7 @@ public class EHBOStappenChecker : MonoBehaviour
                 Debug.Log("Hartcompressie voltooid. Beademingsfase start NU!");
                 break;
 
-           case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": 
+            case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": 
                 DeactiveerAlleInteracties();
                 Debug.Log("Beademing voltooid! Volgende cyclus voorbereiden...");
                 
@@ -170,8 +170,34 @@ public class EHBOStappenChecker : MonoBehaviour
                 {
                     Debug.LogError("[STAPPENCHECKER] Kan 'omstanderNPC' niet vinden in de Hierarchy!");
                 }
+                break;
 
-                break; 
+            case "AED aansluiten":
+                DeactiveerAlleInteracties();
+                Debug.Log("<color=orange>[FASE]</color> AED stap is actief. We wachten tot de speler de schok toedient...");
+                break;
+            
+            case "Herhaal borstcompressies":
+                DeactiveerAlleInteracties();
+                
+                // 1. Zet de fysieke zone weer aan
+                if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
+                
+                // 2. Zet de Ghost Hands aan
+                if (ghostHandsHartcompressie) 
+                {
+                    ghostHandsHartcompressie.SetActive(true);
+
+                    // --- NIEUW: Start direct de animatie op deze handen! ---
+                    GhostHandAnimatie animScript = ghostHandsHartcompressie.GetComponent<GhostHandAnimatie>();
+                    if (animScript != null)
+                    {
+                        animScript.StartDeAnimatieEnRondAf();
+                    }
+                }
+                
+                Debug.Log("<color=orange>[FASE]</color> Hartcompressie gereset én animatie gestart!");
+                break;
         }
     }
 

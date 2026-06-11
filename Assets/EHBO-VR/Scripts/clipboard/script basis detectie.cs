@@ -34,8 +34,7 @@ public class scriptbasisdetectie : MonoBehaviour
             // --- DE AANPASSING HIER ---
             if (ProgressBarUI.Instance != null)
             {
-                // We geven nu de benodigde tijd EN de 2 specifieke hand-renderers mee!
-                ProgressBarUI.Instance.StartProgressBar(requiredDuration, linkeHandVanDezeStap, rechterHandVanDezeStap);
+            ProgressBarUI.Instance.StartProgressBar(requiredDuration);
             }
         }
     }
@@ -57,6 +56,20 @@ public class scriptbasisdetectie : MonoBehaviour
 
     void Update()
     {
+        // --- TIJDELIJKE TEST MET SPATIEBALK (OMZEIL DE VR CONTROLLER) ---
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isTaskFinished) return;
+            isCountingActionTime = true;
+            Debug.Log("<color=orange>[TEST]</color> Spatiebalk ingedrukt! Handmatig de balk gestart.");
+
+            if (ProgressBarUI.Instance != null)
+            {
+                ProgressBarUI.Instance.StartProgressBar(requiredDuration, linkeHandVanDezeStap, rechterHandVanDezeStap);
+            }
+        }
+        // -----------------------------------------------------------------
+
         if (isCountingActionTime && !isTaskFinished)
         {
             elapsedActionTime += Time.deltaTime;
