@@ -13,7 +13,32 @@ public class ClipboardScaleController : MonoBehaviour
 
     private bool isFocused = false;
 
-    void OnEnable() => toggleAction.action.Enable();
+    void OnEnable()
+    {
+        if (toggleAction.action != null)
+        {
+            toggleAction.action.Enable();
+        }
+    }
+
+    void Start()
+    {
+        // Extra veiligheid: Mocht het Input System bij OnEnable nog niet klaar zijn,
+        // dan forceren we de knop hier bij de start nogmaals aan.
+        if (toggleAction.action != null && !toggleAction.action.enabled)
+        {
+            toggleAction.action.Enable();
+        }
+
+        // Zorg dat het klembord direct naar zijn beginpositie schiet
+        Transform target = isFocused ? focusAnchor : normalAnchor;
+        if (target != null)
+        {
+            transform.position = target.position;
+            transform.rotation = target.rotation;
+            transform.localScale = target.localScale;
+        }
+    }
 
     void LateUpdate() // LateUpdate werkt beter voor objecten die de camera volgen
     {

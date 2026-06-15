@@ -40,21 +40,21 @@ public class GhostHandAnimatie : MonoBehaviour
 
         Debug.Log("<color=green>[GHOST HANDS] Animatietijd voorbij. Checker updaten!</color>");
         
+        // --- DE DEFINITIEVE CLIPBOARD FIX ---
         if (EHBOStappenChecker.Instance != null)
         {
-            // We kijken nu simpelweg naar de boolean die de Stappenchecker heeft omgezet!
             if (isHerhalingsStap)
             {
+                // Vink NU de herhaalstap af op het klembord (dit triggert daarna automatisch de ambulance-case!)
                 EHBOStappenChecker.Instance.RegisterStep("Herhaal borstcompressies");
-                Debug.Log("<color=green>[GHOST HANDS]</color> Ronde 2 (Herhaling) succesvol afgerond via de animatie!");
+                Debug.Log("<color=green>[GHOST HANDS]</color> Herhaal borstcompressies succesvol AFGEVINKT op klembord!");
             }
-            // In alle andere gevallen (Ronde 1 bij de start) vinken we de normale eerste reanimatie af
             else
             {
+                // Ronde 1 (vinkt de eerste lange reanimatiestap af)
                 EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
-                Debug.Log("<color=green>[GHOST HANDS]</color> Ronde 1 succesvol afgerond via de animatie!");
+                Debug.Log("<color=green>[GHOST HANDS]</color> Ronde 1 succesvol AFGEVINKT op klembord!");
 
-                // De omstander mag de telefoon ALLEEN resetten in ronde 1!
                 if (bystanderNPC != null)
                 {
                     bystanderNPC.ResetForPhoneCall();

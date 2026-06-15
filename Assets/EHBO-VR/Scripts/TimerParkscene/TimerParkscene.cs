@@ -23,12 +23,17 @@ public class TimerParkscene : MonoBehaviour
 
     void Start()
     {
-        // We zetten de timer in het script niet meer handmatig uit! 
-        // Zorg dat het klembord en de timer in de Unity Editor (Inspector) gewoon AAN staan.
-        // Dit script zet de PARENT (het klembord) uit, waardoor de timer automatisch meegaat.
-        if (clipboardGrabableObject != null)
-            clipboardGrabableObject.SetActive(false);
+        // --- DE CLIPBOARD & TIMER SPLITSING ---
+        // 1. Het klembord blijft lekker AAN vanaf het begin
+        // (Dus GEEN clipboardGrabableObject.SetActive(false); meer!)
 
+        // 2. De tijdsbalk voor je gezicht zetten we bij de start juist wél UIT!
+        if (timerCanvas != null)
+        {
+            timerCanvas.SetActive(false); 
+            Debug.Log("[TIMER] Tijdsbalk tijdelijk verborgen tot het incident start.");
+        }
+        
         totalTime = remainingTime;
         UpdateTimerDisplay();
 
@@ -43,33 +48,43 @@ public class TimerParkscene : MonoBehaviour
     {
         isTimerRunning = true;
         
-        // --- GEWIJZIGD: We halen de timerCanvas.SetActive(true) hier WEG! ---
-        // Die mag pas over 5 seconden aan als het klembord er ook is.
+        // --- GEWIJZIGD: We zetten de tijdsbalk hier NIET meer direct aan! ---
+        // In plaats daarvan starten we de timer die 5 seconden wacht.
+        StartCoroutine(WachtEnActiveerTijdsbalk(5.0f));
         
         if (timerAudioSource != null)
         {
             if (timerTickClip != null) timerAudioSource.clip = timerTickClip;
             timerAudioSource.Play();
-            Debug.Log("Timer geluid gestart!");
+            Debug.Log("Timer geluid en logica gestart!");
         }
 
         if (stappenChecker != null)
         {
-            stappenChecker.VictimHasFallen(); 
+            stappenChecker.VictimHasFallen(); // Of VictimHasFallen() hoe hij bij jou heette
         }
 
-        // Start de timer die 5 seconden wacht voor het klembord én de timer
-        StartCoroutine(WachtEnActiveerKlembord(5.0f));
+        Debug.Log("De 240 seconden timer loopt op de achtergrond. Visuele balk verschijnt over 5 seconden.");
+    }
 
-        Debug.Log("De 300 seconden timer is gestart!");
+    // --- DE NIEUWE VERTRAGINGS-ROUTINE ---
+    private IEnumerator WachtEnActiveerTijdsbalk(float delay)
+    {
+        // Wacht exact 5 seconden
+        yield return new WaitForSeconds(delay); 
+
+        // Zet nu pas de tijdsbalk voor je gezicht aan!
+        if (timerCanvas != null)
+        {
+            timerCanvas.SetActive(true);
+            Debug.Log("[TIMER] De 5 seconden zijn voorbij! Tijdsbalk is nu zichtbaar op de center anchor.");
+        }
     }
 
     private IEnumerator WachtEnActiveerKlembord(float delay)
     {
         yield return new WaitForSeconds(delay); 
 
-        // Zet nu in één klap de ouder aan. Omdat de timer erin zit en in de editor aan staat,
-        // komt hij nu direct perfect en synchroon mee tevoorschijn!
         if (clipboardGrabableObject != null)
         {
             clipboardGrabableObject.SetActive(true); 
