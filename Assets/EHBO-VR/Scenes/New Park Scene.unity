@@ -402,6 +402,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: npc_csl_00_character_02f_02 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6174326141219191701, guid: 80e578b2d7250b542b1c305c12391f3e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6366309836495766085, guid: 80e578b2d7250b542b1c305c12391f3e, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -5197,7 +5201,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c707f4ad2783774195b911495c94145, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.1052475
+      value: -7.1530647
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c707f4ad2783774195b911495c94145, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5205,7 +5209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c707f4ad2783774195b911495c94145, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.0642548
+      value: -7.1439743
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1c707f4ad2783774195b911495c94145, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6617,7 +6621,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd866836ad8d3b45a9d61d347d4b757, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.3233414
+      value: -8.945
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd866836ad8d3b45a9d61d347d4b757, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8849,7 +8853,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0f9efc8f5587b974bad7af8136973218, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.1083374
+      value: -7.73
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0f9efc8f5587b974bad7af8136973218, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11790,6 +11794,79 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2847952609375012767, guid: 4ab518db7d743844a826e15eb46a4711, type: 3}
   m_PrefabInstance: {fileID: 261029277}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &266246425
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 266246426}
+  - component: {fileID: 266246428}
+  - component: {fileID: 266246427}
+  m_Layer: 0
+  m_Name: HandenDetectieHart_Ronde2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &266246426
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266246425}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.12350372, y: -0.0018217657, z: 0.004172101, w: 0.99233365}
+  m_LocalPosition: {x: 0.007, y: 0.085, z: 0.056}
+  m_LocalScale: {x: 0.49999988, y: 0.49999994, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1630443799}
+  m_LocalEulerAnglesHint: {x: -14.188, y: -0.275, z: 0.516}
+--- !u!114 &266246427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266246425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebf9f61edbe01274daf8046b08dc8f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::scriptbasisdetectie
+  requiredDuration: 2
+  ghostHandScript: {fileID: 1362860165}
+  linkeHandVanDezeStap: {fileID: 1801628550}
+  rechterHandVanDezeStap: {fileID: 286681072}
+  taskToComplete: 
+  isCountingActionTime: 0
+  isTaskFinished: 0
+--- !u!65 &266246428
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266246425}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.39272186, y: 0.26624072, z: 0.22211829}
+  m_Center: {x: -0.0037746625, y: -0.10739826, z: 0.09650301}
 --- !u!1001 &272964399
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18267,15 +18344,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e7120afcbac6abb4095ca6c98bc290f5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 21.59
+      value: 23.78
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e7120afcbac6abb4095ca6c98bc290f5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.9580002
+      value: -2.99
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e7120afcbac6abb4095ca6c98bc290f5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -47.46
+      value: -47.62
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e7120afcbac6abb4095ca6c98bc290f5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -26759,7 +26836,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 1000
-  field of view: 69.95724
+  field of view: 60.000004
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -26793,8 +26870,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 853976630}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11971238, y: 0.008030366, z: -0.000034576224, w: 0.9927762}
-  m_LocalPosition: {x: 4.536343, y: 2.2612479, z: 10.032321}
+  m_LocalRotation: {x: 0.5611423, y: 0.007955935, z: -0.009968067, w: 0.8276211}
+  m_LocalPosition: {x: 5.1125503, y: 3.989929, z: 16.184212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -30229,6 +30306,8 @@ MonoBehaviour:
   linkeHandVanDezeStap: {fileID: 1801628550}
   rechterHandVanDezeStap: {fileID: 286681072}
   taskToComplete: 
+  isCountingActionTime: 0
+  isTaskFinished: 0
 --- !u!65 &968878568
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -33214,12 +33293,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebf9f61edbe01274daf8046b08dc8f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::scriptbasisdetectie
-  requiredDuration: 8
+  requiredDuration: 5
   ghostHandScript: {fileID: 0}
   linkeHandVanDezeStap: {fileID: 2052311038}
   rechterHandVanDezeStap: {fileID: 426615624}
   taskToComplete: Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden
     twee keer in de mond
+  isCountingActionTime: 0
+  isTaskFinished: 0
 --- !u!65 &1028096812
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -34174,7 +34255,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6b1e4bec4931ddd4cbc108304caba939, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.762184
+      value: -6.81
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6b1e4bec4931ddd4cbc108304caba939, type: 3}
       propertyPath: m_LocalPosition.y
@@ -34182,7 +34263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6b1e4bec4931ddd4cbc108304caba939, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.9502792
+      value: -6.03
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6b1e4bec4931ddd4cbc108304caba939, type: 3}
       propertyPath: m_LocalRotation.w
@@ -36010,6 +36091,8 @@ MonoBehaviour:
   rechterHandVanDezeStap: {fileID: 848586762}
   taskToComplete: Open de luchtweg van het slachtoffer door het hoofd naar achter
     te kantelen
+  isCountingActionTime: 0
+  isTaskFinished: 0
 --- !u!65 &1087755492
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -37984,6 +38067,12 @@ MonoBehaviour:
     completedTexture: {fileID: 2800000, guid: 2e51ca9bcc41d734aaa2ccf8414e173c, type: 3}
     voiceOver: {fileID: 0}
   - taskName: Herhaal borstcompressies
+    taskImage: {fileID: 1543399282}
+    taskText: {fileID: 435888354}
+    placeholderText: '?'
+    completedTexture: {fileID: 2800000, guid: 2e51ca9bcc41d734aaa2ccf8414e173c, type: 3}
+    voiceOver: {fileID: 0}
+  - taskName: Hulpverleners nemen over
     taskImage: {fileID: 1543399282}
     taskText: {fileID: 435888354}
     placeholderText: '?'
@@ -41839,6 +41928,7 @@ MonoBehaviour:
   taskToComplete: Voer 30 borstcompressies uit met een snelheid van 2 compressies
     per seconde
   bystanderNPC: {fileID: 1942304188}
+  isHerhalingsStap: 0
 --- !u!1 &1365211384
 GameObject:
   m_ObjectHideFlags: 0
@@ -41889,6 +41979,8 @@ MonoBehaviour:
   linkeHandVanDezeStap: {fileID: 14155569}
   rechterHandVanDezeStap: {fileID: 1983319091}
   taskToComplete: Bewustzijn Check
+  isCountingActionTime: 0
+  isTaskFinished: 0
 --- !u!65 &1365211387
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -47614,7 +47706,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5801245061754409418, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: _heightOffset
-      value: -0.7
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 5801245061754409418, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: _playerOrigin
@@ -51153,6 +51245,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
+      propertyPath: HandenDetectieHartRonde2
+      value: 
+      objectReference: {fileID: 266246425}
+    - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: ghostHandsHartcompressie
       value: 
       objectReference: {fileID: 1362860162}
@@ -51196,7 +51292,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'correctOrder.Array.data[9]'
-      value: Hulpdiensten Nemen Over
+      value: Hulpverleners nemen over
       objectReference: {fileID: 0}
     - target: {fileID: 2018896497478315968, guid: c1c5081efeb62d64da233226b103e892, type: 3}
       propertyPath: 'npcAnimators.Array.data[0]'
@@ -51604,6 +51700,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1584106114089063881, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
       insertIndex: -1
       addedObject: {fileID: 968878566}
+    - targetCorrespondingSourceObject: {fileID: 1584106114089063881, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 266246426}
     - targetCorrespondingSourceObject: {fileID: 1584106114089063881, guid: 1e702983913400042ac3fcd1173a6d37, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1362860163}
@@ -53975,7 +54074,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1da15c3f7e068ed46ba2bfcca2f5b22b, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1084884740351611579, guid: 1da15c3f7e068ed46ba2bfcca2f5b22b, type: 3}
       propertyPath: m_LocalPosition.x

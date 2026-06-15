@@ -21,6 +21,7 @@ public class EHBOStappenChecker : MonoBehaviour
     [SerializeField] private GameObject HandenDetectieSchouders;
     [SerializeField] private GameObject HandenDetectieKinlift;
     [SerializeField] private GameObject HandenDetectieHart;
+    [SerializeField] private GameObject HandenDetectieHartRonde2;
     [SerializeField] private GameObject HandenDetectieBeademing;
 
     [Header("Fysieke Objecten - Overig")]
@@ -101,7 +102,7 @@ public class EHBOStappenChecker : MonoBehaviour
             DeactiveerAlleInteracties();
             TriggerFaseLogica(stepName);
 
-            DisplayDebugInfo(); // Update ook meteen het debug-paneel in VR
+            DisplayDebugInfo(); // Update meteen het debug-paneel in VR
 
             if (completedSteps.Count >= correctOrder.Count)
                 ValidateOrder();
@@ -172,6 +173,7 @@ public class EHBOStappenChecker : MonoBehaviour
                 }
                 break;
 
+            // --- HOOFDLETTER FIX VOOR DE AED STAP ---
             case "AED aansluiten":
                 DeactiveerAlleInteracties();
                 Debug.Log("<color=orange>[FASE]</color> AED stap is actief. We wachten tot de speler de schok toedient...");
@@ -180,23 +182,44 @@ public class EHBOStappenChecker : MonoBehaviour
             case "Herhaal borstcompressies":
                 DeactiveerAlleInteracties();
                 
-                // 1. Zet de fysieke zone weer aan
-                if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
-                
-                // 2. Zet de Ghost Hands aan
-                if (ghostHandsHartcompressie) 
+                // 1. Zet de nieuwe zone aan voor ronde 2! 
+                if (HandenDetectieHartRonde2 != null) 
                 {
-                    ghostHandsHartcompressie.SetActive(true);
+                    HandenDetectieHartRonde2.SetActive(true);
 
-                    // --- NIEUW: Start direct de animatie op deze handen! ---
-                    GhostHandAnimatie animScript = ghostHandsHartcompressie.GetComponent<GhostHandAnimatie>();
-                    if (animScript != null)
+                    // HARD RESET VOOR DE NIEUWE ZONE:
+                    scriptbasisdetectie zoneScript2 = HandenDetectieHartRonde2.GetComponent<scriptbasisdetectie>();
+                    if (zoneScript2 != null)
                     {
-                        animScript.StartDeAnimatieEnRondAf();
+                        zoneScript2.isTaskFinished = false;           
+                        zoneScript2.isCountingActionTime = false;      
+                        zoneScript2.elapsedActionTime = 0.0f; // <-- DE CRUCIALE FIX: Zet de klok voor zone 2 op 0!
+                        Debug.Log("<color=orange>[RESET]</color> Zone Ronde 2 klok op 0 gezet!");
                     }
                 }
                 
-                Debug.Log("<color=orange>[FASE]</color> Hartcompressie gereset én animatie gestart!");
+                // 2. Zet de Ghost Hands aan
+                if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
+                
+                // 3. Schakel de herhaalmodus in op de Ghost Hands
+                if (ghostHandsHartcompressie != null) 
+                {
+                    GhostHandAnimatie animScript = ghostHandsHartcompressie.GetComponent<GhostHandAnimatie>();
+                    if (animScript != null)
+                    {
+                        animScript.gameObject.SetActive(true);
+                        animScript.isHerhalingsStap = true; 
+                    }
+                }
+                
+                Debug.Log("<color=orange>[FASE]</color> Nieuwe zone voor ronde 2 start nu gegarandeerd vanaf 0 seconden.");
+                break;
+
+            case "Hulpverleners nemen over":
+                DeactiveerAlleInteracties();
+                Debug.Log("<color=green>[FINALE]</color> De ambulance is gearriveerd! Scenario succesvol doorlopen.");
+                
+                // Hier kun je eventueel nog een sirene-geluid afspelen of direct de evaluatie triggeren
                 break;
         }
     }

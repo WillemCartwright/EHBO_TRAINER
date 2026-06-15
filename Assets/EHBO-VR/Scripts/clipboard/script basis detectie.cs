@@ -10,18 +10,18 @@ public class scriptbasisdetectie : MonoBehaviour
     [Tooltip("Sleep hier de Ghost Hands in waar je animatie-script op staat")]
     [SerializeField] private GhostHandAnimatie ghostHandScript; 
 
-    // --- NIEUWE VARIABELEN VOOR DE HAND SHADERS ---
     [Tooltip("Sleep hier de child-mesh (Renderer) van de LINKER ghost hand in")]
     [SerializeField] private Renderer linkeHandVanDezeStap;
     [Tooltip("Sleep hier de child-mesh (Renderer) van de RECHTER ghost hand in")]
     [SerializeField] private Renderer rechterHandVanDezeStap;
 
-    [Header("Afronding Settings (Alleen voor zones ZONDER animatie)")]
+    [Header("Afronding Settings")]
     [SerializeField] private string taskToComplete;
 
-    private float elapsedActionTime = 0.0f;
-    private bool isCountingActionTime = false;
-    private bool isTaskFinished = false; 
+    [HideInInspector] public float elapsedActionTime = 0.0f;
+    
+    [HideInInspector] public bool isCountingActionTime = false;
+    [HideInInspector] public bool isTaskFinished = false; 
 
     void OnTriggerEnter(Collider other)
     {
@@ -31,10 +31,9 @@ public class scriptbasisdetectie : MonoBehaviour
             isCountingActionTime = true;
             Debug.Log("<color=cyan>[ZONE]</color> Handen gedetecteerd! Timer loopt...");
 
-            // --- DE AANPASSING HIER ---
             if (ProgressBarUI.Instance != null)
             {
-            ProgressBarUI.Instance.StartProgressBar(requiredDuration);
+                ProgressBarUI.Instance.StartProgressBar(requiredDuration);
             }
         }
     }
@@ -56,19 +55,12 @@ public class scriptbasisdetectie : MonoBehaviour
 
     void Update()
     {
-        // --- TIJDELIJKE TEST MET SPATIEBALK (OMZEIL DE VR CONTROLLER) ---
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (isTaskFinished) return;
             isCountingActionTime = true;
-            Debug.Log("<color=orange>[TEST]</color> Spatiebalk ingedrukt! Handmatig de balk gestart.");
-
-            if (ProgressBarUI.Instance != null)
-            {
-                ProgressBarUI.Instance.StartProgressBar(requiredDuration, linkeHandVanDezeStap, rechterHandVanDezeStap);
-            }
+            ProgressBarUI.Instance?.StartProgressBar(requiredDuration);
         }
-        // -----------------------------------------------------------------
 
         if (isCountingActionTime && !isTaskFinished)
         {
@@ -86,21 +78,22 @@ public class scriptbasisdetectie : MonoBehaviour
         isTaskFinished = true;
         isCountingActionTime = false;
         
-        // --- TIP: Als de shader dadelijk werkt, kun je deze weer aanzetten ---
         if (ProgressBarUI.Instance != null)
         {
             ProgressBarUI.Instance.StopProgressBar();
         }
 
+        // 1. Als er handen zijn, start de animatie (deze handelt via GhostHandAnimatie ZELF het klembord af)
         if (ghostHandScript != null)
         {
             ghostHandScript.gameObject.SetActive(true);
             ghostHandScript.StartDeAnimatieEnRondAf();
-            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Handen geactiveerd, animatie start nu.");
+            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Handen geactiveerd, animatie start.");
         }
+        // 2. VOOR ALLES ZONDER ANIMATIE (Zoals de allereerste schouder-klop stap!): Meld direct de taak af!
         else
         {
-            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Geen animatie, direct afronden.");
+            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Geen animatie (vroege stap), direct afronden.");
             if (EHBOStappenChecker.Instance != null)
             {
                 EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
