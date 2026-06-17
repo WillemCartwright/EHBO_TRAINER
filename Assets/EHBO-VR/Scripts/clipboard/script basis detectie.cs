@@ -90,12 +90,13 @@ public class scriptbasisdetectie : MonoBehaviour
             ghostHandScript.StartDeAnimatieEnRondAf();
             Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Handen geactiveerd, animatie start.");
         }
-        // 2. VOOR ALLES ZONDER ANIMATIE (Zoals de allereerste schouder-klop stap!): Meld direct de taak af!
+        // 2. VOOR ALLES ZONDER ANIMATIE (Of stappen die direct moeten afronden):
         else
         {
-            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Geen animatie (vroege stap), direct afronden.");
+            Debug.Log("<color=green>[ZONE]</color> 4 seconden gehaald! Direct afronden voor stap: " + taskToComplete);
             if (EHBOStappenChecker.Instance != null)
             {
+                // GEBRUIK DE VARIABELE UIT DE INSPECTOR IN PLAATS VAN HARDCODED TEKST
                 EHBOStappenChecker.Instance.RegisterStep(taskToComplete);
             }
         }

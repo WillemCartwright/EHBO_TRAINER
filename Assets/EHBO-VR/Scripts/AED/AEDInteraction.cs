@@ -47,7 +47,6 @@ public class AEDInteraction : MonoBehaviour
             audioSource = GetComponent<AudioSource>();
         }
 
-        // Basisstand voor de kledingstukken bij de start
         if (objectenDieUitMoeten != null)
         {
             foreach (GameObject obj in objectenDieUitMoeten)
@@ -103,11 +102,11 @@ public class AEDInteraction : MonoBehaviour
         if (aedGeactiveerd && linksGeplakt && rechtsGeplakt)
         {
             scenarioAfgerond = true; 
-            Debug.Log("[AED] Tweede klik: Schok wordt toegediend!");
+            Debug.Log("[AED] Tweede klik: Schok wordt toegediend! Audio start...");
 
             if (outlineComponent != null) outlineComponent.enabled = false;
 
-            // Trigger het schudden (als de animator is ingevuld)
+            // Trigger het schudden van het slachtoffer
             if (victimAnimator != null)
             {
                 victimAnimator.gameObject.SetActive(true); 
@@ -119,25 +118,19 @@ public class AEDInteraction : MonoBehaviour
             if (audioSource != null && schokAudioClip != null)
             {
                 audioSource.PlayOneShot(schokAudioClip);
-                wachtTijd = schokAudioClip.length; // Pakt exact de seconden van de audio clip
+                wachtTijd = schokAudioClip.length; 
                 Debug.Log($"[AED] Audio gestart. Lengte: {wachtTijd} seconden.");
             }
 
-            // Start de timer die wacht tot de audio klaar is
+            // Start de timer. Pas als deze afloopt, vinken we de AED af!
             Invoke("ActiveerBorstcompressieHerstart", wachtTijd);
-
-            // Meld de AED stap aan de stappenchecker (Exact met Hoofdletters!)
-            if (EHBOStappenChecker.Instance != null)
-            {
-                EHBOStappenChecker.Instance.RegisterStep("AED aansluiten");
-            }
         }
     }
 
     // --- DE TIMING FUNCTIE DIE GEACTIVEERD WORDT ALS DE AUDIO KLAAR IS ---
     private void ActiveerBorstcompressieHerstart()
     {
-        Debug.Log("<color=green>[AED]</color> Audio is klaar! Schudden stoppen en seintje naar Stappenchecker sturen...");
+        Debug.Log("<color=green>[AED]</color> Audio is klaar! Schudden stoppen en AED-stap officieel afronden...");
 
         // Stop het schudden van het slachtoffer
         if (victimAnimator != null)
@@ -145,10 +138,12 @@ public class AEDInteraction : MonoBehaviour
             victimAnimator.SetBool("shaking", false);
         }
 
-        // Meld de herhaal-stap aan de stappenchecker. Die zet nu de Ghost Hands en zones aan!
+        // FIX: Meld NU pas de AED-stap af. De stappenchecker zal hierdoor automatisch 
+        // doorschakelen naar de volgende stap in de lijst ("Herhaal borstcompressies") 
+        // en de case in TriggerFaseLogica activeren om de VR-zone aan te zetten!
         if (EHBOStappenChecker.Instance != null)
         {
-            EHBOStappenChecker.Instance.RegisterStep("Herhaal borstcompressies");
+            EHBOStappenChecker.Instance.RegisterStep("AED aansluiten");
         }
     }
 

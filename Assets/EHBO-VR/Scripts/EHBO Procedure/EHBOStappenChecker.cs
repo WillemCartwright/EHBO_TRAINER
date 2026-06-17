@@ -24,6 +24,8 @@ public class EHBOStappenChecker : MonoBehaviour
     [SerializeField] private GameObject HandenDetectieHartRonde2;
     [SerializeField] private GameObject HandenDetectieBeademing;
 
+    public WaypointMover ambulanceMovement; // Sleep hier straks de ambulance in
+
     [Header("Fysieke Objecten - Overig")]
     [SerializeField] private VictimInteraction victim;
     [SerializeField] private NPCInteraction omstanderNPC; 
@@ -62,6 +64,7 @@ public class EHBOStappenChecker : MonoBehaviour
         if (HandenDetectieKinlift) HandenDetectieKinlift.SetActive(false);
         if (HandenDetectieHart) HandenDetectieHart.SetActive(false);
         if (HandenDetectieBeademing) HandenDetectieBeademing.SetActive(false);
+        if (HandenDetectieHartRonde2) HandenDetectieHartRonde2.SetActive(false);
 
         if (ghostHandsSchudden) ghostHandsSchudden.SetActive(false);
         if (ghostHandsLuchtweg) ghostHandsLuchtweg.SetActive(false);
@@ -111,121 +114,112 @@ public class EHBOStappenChecker : MonoBehaviour
 
     private void TriggerFaseLogica(string stepName)
     {
+        // Zet altijd direct alle interacties uit zodat er nooit twee zones tegelijk aan staan
+        DeactiveerAlleInteracties();
+
         switch (stepName)
         {
             case "Start Incident":
-                DeactiveerAlleInteracties();
-                NPCInteraction[] alleNPCs = Object.FindObjectsByType<NPCInteraction>(FindObjectsSortMode.None);
-                foreach (NPCInteraction npc in alleNPCs) npc.EnableOutlineCapability();
+                // Start -> Nu mag je de omstander aantikken
                 break;
 
             case "Tik de omstander aan zodat hij in de buurt blijft": 
-                DeactiveerAlleInteracties();
+                // Omstander aangetikt -> Nu pas mag je de Bewustzijn Check doen!
                 if (HandenDetectieSchouders) HandenDetectieSchouders.SetActive(true);
                 if (ghostHandsSchudden) ghostHandsSchudden.SetActive(true);
                 break;
 
             case "Bewustzijn Check":
-                DeactiveerAlleInteracties();
+                // Bewustzijn Check gedaan -> Nu start de omstander met 112 bellen
                 if (omstanderNPC != null) omstanderNPC.ResetForPhoneCall();
                 break;
 
             case "Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen":
-                DeactiveerAlleInteracties();
+                // 112 bellen is KLAAR -> Nu pas activeren we de Kinlift/Luchtweg zone!
                 if (HandenDetectieKinlift != null) HandenDetectieKinlift.SetActive(true);
                 if (ghostHandsLuchtweg != null) ghostHandsLuchtweg.SetActive(true);
-                Debug.Log("112 Bellen voltooid. Kinlift zones zijn nu direct actief.");
                 break;
 
             case "Open de luchtweg van het slachtoffer door het hoofd naar achter te kantelen":
-                DeactiveerAlleInteracties(); 
+                // Luchtweg/Kinlift is NU pas echt gedaan -> Nu pas mag je gaan REANIMEREN!
                 if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
                 if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
-                Debug.Log("Luchtweg voltooid. Hartcompressie zones zijn nu actief.");
                 break;
 
             case "Voer 30 borstcompressies uit met een snelheid van 2 compressies per seconde": 
+                // Eerste reanimatie klaar -> Nu pas mag je gaan BEADEMEN!
                 if (HandenDetectieBeademing) HandenDetectieBeademing.SetActive(true);
                 if (ghostHandsBeademing) ghostHandsBeademing.SetActive(true);
-                Debug.Log("Hartcompressie voltooid. Beademingsfase start NU!");
                 break;
 
             case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": 
-                DeactiveerAlleInteracties();
-                Debug.Log("Beademing voltooid! Volgende cyclus voorbereiden...");
-                
+                // Beademing klaar -> Omstander rent weg voor de AED
                 GameObject omstander = GameObject.Find("npc_csl_00_character_01m_01"); 
                 if (omstander != null)
                 {
                     var movement = omstander.GetComponent<NPCMovement>();
-                    if (movement != null)
-                    {
-                        movement.RentTerugMetAED();
-                    }
-                    else
-                    {
-                        Debug.LogError("[STAPPENCHECKER] NPCMovement script niet gevonden op de omstander!");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("[STAPPENCHECKER] Kan 'omstanderNPC' niet vinden in de Hierarchy!");
+                    if (movement != null) movement.RentTerugMetAED();
                 }
                 break;
 
-            // --- HOOFDLETTER FIX VOOR DE AED STAP ---
             case "AED aansluiten":
-                DeactiveerAlleInteracties();
-                Debug.Log("<color=orange>[FASE]</color> AED stap is actief. We wachten tot de speler de schok toedient...");
-                break;
-            
-            case "Herhaal borstcompressies":
-                DeactiveerAlleInteracties();
+                // AED-schok en audio zijn klaar! Nu starten we direct de herhalingsronde.
+                Debug.Log("<color=yellow>[STAPPENCHECKER]</color> AED klaar. Zones voor herhaling borstcompressies worden nu aangezet!");
                 
-                // 1. Zet de nieuwe zone aan voor ronde 2! 
+                // Activeer direct de zone voor ronde 2
                 if (HandenDetectieHartRonde2 != null) 
                 {
                     HandenDetectieHartRonde2.SetActive(true);
-
-                    // HARD RESET VOOR DE NIEUWE ZONE:
                     scriptbasisdetectie zoneScript2 = HandenDetectieHartRonde2.GetComponent<scriptbasisdetectie>();
                     if (zoneScript2 != null)
                     {
                         zoneScript2.isTaskFinished = false;           
                         zoneScript2.isCountingActionTime = false;      
-                        zoneScript2.elapsedActionTime = 0.0f; // <-- DE CRUCIALE FIX: Zet de klok voor zone 2 op 0!
-                        Debug.Log("<color=orange>[RESET]</color> Zone Ronde 2 klok op 0 gezet!");
+                        zoneScript2.elapsedActionTime = 0.0f; 
                     }
                 }
                 
-                // 2. Zet de Ghost Hands aan
-                if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
-                
-                // 3. Schakel de herhaalmodus in op de Ghost Hands
+                // Activeer de ghost hands voor ronde 2
                 if (ghostHandsHartcompressie != null) 
                 {
                     GhostHandAnimatie animScript = ghostHandsHartcompressie.GetComponent<GhostHandAnimatie>();
                     if (animScript != null)
                     {
-                        animScript.gameObject.SetActive(true);
+                        ghostHandsHartcompressie.SetActive(true);
                         animScript.isHerhalingsStap = true; 
                     }
                 }
-                
-                Debug.Log("<color=orange>[FASE]</color> Nieuwe zone voor ronde 2 start nu gegarandeerd vanaf 0 seconden.");
+                break;
+            
+            case "Herhaal borstcompressies":
+                // Deze case mag nu leeg blijven. Hij wordt pas bereikt als de GhostHandAnimatie klaar is
+                // en RegisterStep("Herhaal borstcompressies") heeft aangeroepen.
+                Debug.Log("<color=yellow>[STAPPENCHECKER]</color> Herhaal borstcompressies is zojuist afgevinkt!");
                 break;
 
             case "Hulpverleners nemen over":
-                DeactiveerAlleInteracties();
-                Debug.Log("<color=green>[FINALE]</color> De ambulance is gearriveerd! Scenario succesvol doorlopen.");
+                Debug.Log("<color=green>[FINALE]</color> Ambulance is er.");
                 
-                // Hier kun je eventueel nog een sirene-geluid afspelen of direct de evaluatie triggeren
+                // Activeer het rijden van de ambulance!
+                if (ambulanceMovement != null)
+                {
+                    ambulanceMovement.StartRijden();
+                }
+                else
+                {
+                    Debug.LogError("AmbulanceMovement script mist op het fasescript!");
+                }
                 break;
         }
     }
 
     public void StartPhoneTimer() => Invoke("OnPhoneCallFinished", 5f);
-    private void OnPhoneCallFinished() => RegisterStep("Open de luchtweg van het slachtoffer door het hoofd naar achter te kantelen");
+    
+    private void OnPhoneCallFinished() 
+    {
+        // GECORRIGEERD: De telefoon vinkt nu netjes de 112-stap af als hij klaar is!
+        RegisterStep("Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen");
+    }
 
     private void DisplayDebugInfo()
     {
