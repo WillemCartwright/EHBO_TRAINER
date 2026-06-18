@@ -195,6 +195,7 @@ public class EHBOStappenChecker : MonoBehaviour
                 // Deze case mag nu leeg blijven. Hij wordt pas bereikt als de GhostHandAnimatie klaar is
                 // en RegisterStep("Herhaal borstcompressies") heeft aangeroepen.
                 Debug.Log("<color=yellow>[STAPPENCHECKER]</color> Herhaal borstcompressies is zojuist afgevinkt!");
+                RegisterStep("Hulpverleners nemen over");
                 break;
 
             case "Hulpverleners nemen over":
