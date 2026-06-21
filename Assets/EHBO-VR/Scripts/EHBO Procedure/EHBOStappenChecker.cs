@@ -201,6 +201,17 @@ public class EHBOStappenChecker : MonoBehaviour
             case "Hulpverleners nemen over":
                 Debug.Log("<color=green>[FINALE]</color> Ambulance is er.");
                 
+                // --- NIEUW: Zoek de timer op in de scene en zet hem direct stil! ---
+                TimerParkscene activeTimer = FindObjectOfType<TimerParkscene>();
+                if (activeTimer != null)
+                {
+                    activeTimer.StopTimerBijSucces();
+                }
+                else
+                {
+                    Debug.LogWarning("[STAPPENCHECKER] Kon TimerParkscene niet vinden om stil te zetten!");
+                }
+
                 // Activeer het rijden van de ambulance!
                 if (ambulanceMovement != null)
                 {

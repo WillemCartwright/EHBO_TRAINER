@@ -18,20 +18,26 @@ public class TimerParkscene : MonoBehaviour
     [SerializeField] EHBOStappenChecker stappenChecker; 
     [SerializeField] GameObject clipboardGrabableObject; 
 
+    // --- NIEUW: Referentie naar het Fail Canvas ---
+    [Header("Fail Scenario Settings")]
+    [Tooltip("Sleep hier het speciale Fail Canvas van je reanimatie in")]
+    [SerializeField] private GameObject failCanvas;
+
     private bool isTimerRunning = false;
     private float totalTime;
 
     void Start()
     {
-        // --- DE CLIPBOARD & TIMER SPLITSING ---
-        // 1. Het klembord blijft lekker AAN vanaf het begin
-        // (Dus GEEN clipboardGrabableObject.SetActive(false); meer!)
-
-        // 2. De tijdsbalk voor je gezicht zetten we bij de start juist wél UIT!
         if (timerCanvas != null)
         {
             timerCanvas.SetActive(false); 
             Debug.Log("[TIMER] Tijdsbalk tijdelijk verborgen tot het incident start.");
+        }
+
+        // Zorg ervoor dat het Fail Canvas bij het opstarten altijd netjes uit staat
+        if (failCanvas != null)
+        {
+            failCanvas.SetActive(false);
         }
         
         totalTime = remainingTime;
@@ -48,8 +54,6 @@ public class TimerParkscene : MonoBehaviour
     {
         isTimerRunning = true;
         
-        // --- GEWIJZIGD: We zetten de tijdsbalk hier NIET meer direct aan! ---
-        // In plaats daarvan starten we de timer die 5 seconden wacht.
         StartCoroutine(WachtEnActiveerTijdsbalk(5.0f));
         
         if (timerAudioSource != null)
@@ -61,19 +65,16 @@ public class TimerParkscene : MonoBehaviour
 
         if (stappenChecker != null)
         {
-            stappenChecker.VictimHasFallen(); // Of VictimHasFallen() hoe hij bij jou heette
+            stappenChecker.VictimHasFallen(); 
         }
 
         Debug.Log("De 240 seconden timer loopt op de achtergrond. Visuele balk verschijnt over 5 seconden.");
     }
 
-    // --- DE NIEUWE VERTRAGINGS-ROUTINE ---
     private IEnumerator WachtEnActiveerTijdsbalk(float delay)
     {
-        // Wacht exact 5 seconden
         yield return new WaitForSeconds(delay); 
 
-        // Zet nu pas de tijdsbalk voor je gezicht aan!
         if (timerCanvas != null)
         {
             timerCanvas.SetActive(true);
@@ -114,14 +115,63 @@ public class TimerParkscene : MonoBehaviour
                 isTimerRunning = false;
                 timerparksceneText.color = Color.red;
 
+                // --- HIER GAAT HET MIS: Zorg dat het geluid hier ALTIJD stopt! ---
                 if (timerAudioSource != null)
                 {
                     timerAudioSource.Stop();
+                    Debug.Log("[TIMER] Tijd is op, tikgeluid geforceerd uitgezet!");
                 }
 
                 UpdateTimerDisplay();
                 UpdateRedBar();
+
+                // Controleer of de speler op tijd was, anders Fail Canvas
+                EvalueerScenarioTijdOm();
             }
+        }
+    }
+
+    // --- NIEUW: Check of de speler al bij de ambulance was ---
+    private void EvalueerScenarioTijdOm()
+    {
+        if (stappenChecker != null)
+        {
+            // We halen de huidige actieve stap op uit jouw EHBOStappenChecker
+            string huidigeStap = stappenChecker.GetCurrentStep();
+
+            // Als de huidige stap NIET de ambulance-overdracht is, heeft de speler het helaas niet gehaald
+            if (huidigeStap != "Hulpverleners nemen over")
+            {
+                Debug.Log("<color=red>[FAIL]</color> Tijd is op! Speler was nog bij stap: " + huidigeStap);
+                
+                // Activeer het Fail Canvas!
+                if (failCanvas != null)
+                {
+                    failCanvas.SetActive(true);
+                }
+            }
+            else
+            {
+                Debug.Log("<color=green>[SUCCESS]</color> Tijd is om, maar de ambulance was al geactiveerd. Geen fail!");
+            }
+        }
+    }
+
+    // --- NIEUW: Functie om de timer geforceerd stil te zetten bij succes ---
+    public void StopTimerBijSucces()
+    {
+        isTimerRunning = false; // Stop de Update-loop
+        
+        if (timerAudioSource != null)
+        {
+            timerAudioSource.Stop(); // Stop direct het tikgeluid
+            Debug.Log("[TIMER] Geluid stilgezet omdat het scenario is gehaald!");
+        }
+
+        if (timerCanvas != null)
+        {
+            timerCanvas.SetActive(false); // Verberg de rode tijdsbalk voor het gezicht
+            Debug.Log("[TIMER] Visuele balk verborgen bij succes.");
         }
     }
 
