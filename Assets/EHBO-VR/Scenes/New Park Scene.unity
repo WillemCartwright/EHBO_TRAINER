@@ -29074,7 +29074,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _editor: {fileID: 863775363}
-  _width: 2.35
+  _width: 3.25
   _height: 1
   _color: {r: 1, g: 1, b: 1, a: 0.078431375}
   _borderColor: {r: 0, g: 0, b: 0, a: 1}
@@ -51318,7 +51318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5801245061754409418, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: _heightOffset
-      value: -0.4
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5801245061754409418, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: _playerOrigin
@@ -53552,7 +53552,7 @@ Transform:
   m_GameObject: {fileID: 1569153649}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -129.55, y: 0, z: -50.38}
+  m_LocalPosition: {x: -111.8, y: 0, z: -78.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -60461,7 +60461,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5801245061754409418, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
   m_PrefabInstance: {fileID: 1543143849}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2039350114}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec6a2955cc1374944a4634c6f312985a, type: 3}
@@ -68929,6 +68929,7 @@ MonoBehaviour:
   startschermCanvas: {fileID: 2026109554}
   tutorialSceneNaam: TutorialScene
   parkTimer: {fileID: 49131161}
+  locomotorObject: {fileID: 2039350114}
 --- !u!1001 &2035092286
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69076,6 +69077,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 2847952609375012767, guid: 4ab518db7d743844a826e15eb46a4711, type: 3}
   m_PrefabInstance: {fileID: 2037514209}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2039350114 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3903482225804038116, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+  m_PrefabInstance: {fileID: 1543143849}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2042725405
 PrefabInstance:

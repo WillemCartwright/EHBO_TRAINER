@@ -120,40 +120,33 @@ public class EHBOStappenChecker : MonoBehaviour
         switch (stepName)
         {
             case "Start Incident":
-                // Start -> Nu mag je de omstander aantikken
                 break;
 
             case "Tik de omstander aan zodat hij in de buurt blijft": 
-                // Omstander aangetikt -> Nu pas mag je de Bewustzijn Check doen!
                 if (HandenDetectieSchouders) HandenDetectieSchouders.SetActive(true);
                 if (ghostHandsSchudden) ghostHandsSchudden.SetActive(true);
                 break;
 
             case "Bewustzijn Check":
-                // Bewustzijn Check gedaan -> Nu start de omstander met 112 bellen
                 if (omstanderNPC != null) omstanderNPC.ResetForPhoneCall();
                 break;
 
             case "Het slachtoffer is bewusteloos. Laat de omstander 112 voor je bellen":
-                // 112 bellen is KLAAR -> Nu pas activeren we de Kinlift/Luchtweg zone!
                 if (HandenDetectieKinlift != null) HandenDetectieKinlift.SetActive(true);
                 if (ghostHandsLuchtweg != null) ghostHandsLuchtweg.SetActive(true);
                 break;
 
             case "Open de luchtweg van het slachtoffer door het hoofd naar achter te kantelen":
-                // Luchtweg/Kinlift is NU pas echt gedaan -> Nu pas mag je gaan REANIMEREN!
                 if (HandenDetectieHart) HandenDetectieHart.SetActive(true);
                 if (ghostHandsHartcompressie) ghostHandsHartcompressie.SetActive(true);
                 break;
 
             case "Voer 30 borstcompressies uit met een snelheid van 2 compressies per seconde": 
-                // Eerste reanimatie klaar -> Nu pas mag je gaan BEADEMEN!
                 if (HandenDetectieBeademing) HandenDetectieBeademing.SetActive(true);
                 if (ghostHandsBeademing) ghostHandsBeademing.SetActive(true);
                 break;
 
             case "Geef het slachtoffer mond-op-mondbeademing. Blaas binnen tien seconden twee keer in de mond": 
-                // Beademing klaar -> Omstander rent weg voor de AED
                 GameObject omstander = GameObject.Find("npc_csl_00_character_01m_01"); 
                 if (omstander != null)
                 {
@@ -163,10 +156,8 @@ public class EHBOStappenChecker : MonoBehaviour
                 break;
 
             case "AED aansluiten":
-                // AED-schok en audio zijn klaar! Nu starten we direct de herhalingsronde.
                 Debug.Log("<color=yellow>[STAPPENCHECKER]</color> AED klaar. Zones voor herhaling borstcompressies worden nu aangezet!");
                 
-                // Activeer direct de zone voor ronde 2
                 if (HandenDetectieHartRonde2 != null) 
                 {
                     HandenDetectieHartRonde2.SetActive(true);
